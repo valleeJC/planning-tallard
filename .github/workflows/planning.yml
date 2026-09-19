@@ -1,0 +1,56 @@
+name: Actualisation du Planning
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Exécution automatique tous les jours à 8h (heure française)
+  workflow_dispatch:      # Permet de lancer l'exécution à la main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Configurer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: |
+          pip install requests icalendar pandas openpyxl urllib3
+
+      - name: Exécuter le script
+        run: |
+          python update_planning.py
+
+      - name: Préparer les fichiers
+        run: |
+          mkdir -p public
+          cp Planning_Voitures_Tallard.html public/index.html
+          cp Planning_Voitures_Tallard.xlsx public/ 2>/dev/null || true
+
+      - name: Configurer Pages
+        uses: actions/configure-pages@v5
+
+      - name: Téléverser l'artefact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'public'
+
+      - name: Déployer
+        id: deployment
+        uses: actions/deploy-pages@v4
