@@ -20,8 +20,7 @@ jobs:
       - name: Installer les dépendances
         run: |
           python -m pip install --upgrade pip
-          pip install requests icalendar pandas openpyxl urllib3
-
+          pip install requests icalendar pandas openpyxl urllib3 tzdata
       - name: Exécuter le script
         env:
           PYTHONIOENCODING: "utf-8"
