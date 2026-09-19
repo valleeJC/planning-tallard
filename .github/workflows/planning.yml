@@ -38,26 +38,26 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 3. Nettoyage préventif des branches temporaires locales si elles existent
+          # 3. Nettoyage préventif
           git checkout main -f
-          git branch -D gh-pages-temp -ErrorAction SilentlyContinue
+          if (git branch --list gh-pages-temp) { git branch -D gh-pages-temp }
 
           # 4. Copie du HTML généré vers index.html
           Copy-Item Planning_Voitures_Tallard.html index.html -Force
 
-          # 5. Création de la branche orpheline propre
+          # 5. Création de la branche orpheline
           git checkout --orphan gh-pages-temp
 
-          # 6. Ajout forcé des fichiers de rendu
+          # 6. Ajout des fichiers de rendu
           git add -f index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { 
               git add -f Planning_Voitures_Tallard.xlsx 
           }
 
-          # 7. Commit et Push forcé vers la branche distancée gh-pages
+          # 7. Commit et Push forcé
           git commit -m "🤖 Mise à jour automatique du planning"
           git push origin gh-pages-temp:gh-pages --force
 
-          # 8. Nettoyage : retour sur main et suppression de la branche temporaire
+          # 8. Nettoyage final propre
           git checkout main -f
-          git branch -D gh-pages-temp -ErrorAction SilentlyContinue
+          git branch -D gh-pages-temp
