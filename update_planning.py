@@ -23,7 +23,6 @@ TZ_PARIS = zoneinfo.ZoneInfo("Europe/Paris")
 
 def convertir_en_heure_paris(dt_object):
     """Gère l'attribution du fuseau horaire Europe/Paris sans appliquer
-
     de décalage UTC intempestif sur les heures locales transmises par ADE.
     """
     if dt_object is None:
@@ -182,6 +181,10 @@ def extraire_cours():
                     code_statut = "OUI"
                     motif = "Présentiel - Enseignant habilité"
 
+                # On ne conserve que les cours nécessitant une voiture de service
+                if code_statut != "OUI":
+                    continue
+
                 dt_date = dtstart.date()
                 jour_fr = JOURS_FR.get(
                     dtstart.strftime("%A"), dtstart.strftime("%A")
@@ -217,7 +220,6 @@ def extraire_cours():
                     "Matière / Cours": summary,
                     "Enseignant détecté": nom_prof,
                     "Salle / Équipement": location,
-                    "Visio Salle ?": "Oui" if visio_detectee else "Non",
                     "Besoin Voiture Service": statut_voiture,
                     "code_statut": code_statut,
                     "Explication": motif,
@@ -343,16 +345,9 @@ def generer_excel(liste_cours):
         ]
     )
 
-    df_voiture_requise = df_clean[
-        df_clean["Besoin Voiture Service"] == "OUI (Voiture requise)"
-    ]
-
     with pd.ExcelWriter(FICHIER_EXCEL_TEMP, engine="openpyxl") as writer:
-        df_voiture_requise.to_excel(
-            writer, sheet_name="Voiture à réserver", index=False
-        )
         df_clean.to_excel(
-            writer, sheet_name="Planning Global ADE", index=False
+            writer, sheet_name="Voitures à réserver", index=False
         )
 
     appliquer_mise_en_forme_excel(FICHIER_EXCEL_TEMP)
@@ -376,20 +371,13 @@ def generer_excel(liste_cours):
 # ==============================================================================
 
 
-def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
+def generer_tableau_html(cours_list):
     if not cours_list:
         return (
-            "<p class='p-4 text-gray-500'>Aucun cours trouvé ou données"
-            " indisponibles.</p>"
+            "<p class='p-6 text-center text-gray-500 font-medium'>Aucune réservation de voiture nécessaire.</p>"
         )
 
-    colonne_voiture_th = (
-        '<th class="p-3">Besoin Voiture</th>'
-        if inclure_colonne_voiture
-        else ""
-    )
-
-    html = f"""
+    html = """
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
             <thead>
@@ -401,7 +389,6 @@ def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
                     <th class="p-3">Matière / Cours</th>
                     <th class="p-3">Enseignant</th>
                     <th class="p-3">Salle</th>
-                    {colonne_voiture_th}
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -409,23 +396,12 @@ def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
     for c in cours_list:
         if c["est_7j_passes"]:
             row_class = "bg-blue-50 text-blue-900 font-medium"
-            badge_class = "bg-blue-200 text-blue-800"
         elif c["est_7j_futurs"]:
             row_class = "bg-emerald-50 text-emerald-900 font-medium"
-            badge_class = "bg-emerald-200 text-emerald-800"
         elif c["est_vieux_passe"]:
             row_class = "bg-red-50 text-red-700 opacity-75"
-            badge_class = "bg-red-200 text-red-800"
         else:
             row_class = "bg-white text-gray-800 hover:bg-gray-50"
-            badge_class = "bg-gray-100 text-gray-700"
-
-        colonne_voiture_td = (
-            f'<td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs'
-            f' font-bold {badge_class}">{c["Besoin Voiture Service"]}</span></td>'
-            if inclure_colonne_voiture
-            else ""
-        )
 
         html += f"""
         <tr class="{row_class} transition-colors">
@@ -436,7 +412,6 @@ def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
             <td class="p-3 font-medium">{c['Matière / Cours']}</td>
             <td class="p-3">{c['Enseignant détecté']}</td>
             <td class="p-3">{c['Salle / Équipement']}</td>
-            {colonne_voiture_td}
         </tr>
         """
     html += "</tbody></table></div>"
@@ -444,7 +419,6 @@ def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
 
 
 def generer_html(cours):
-    voitures_requises = [c for c in cours if c["code_statut"] == "OUI"]
     date_maj = datetime.now(TZ_PARIS).strftime("%d/%m/%Y à %H:%M")
 
     html_content = f"""<!DOCTYPE html>
@@ -460,7 +434,7 @@ def generer_html(cours):
 
         <div class="bg-slate-900 text-white p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold">🚗 Planning Voiture & Cours — Tallard</h1>
+                <h1 class="text-2xl font-bold">🚗 Planning Réservation Voiture — Tallard ({len(cours)})</h1>
                 <p class="text-slate-400 text-sm mt-1">Dernière actualisation ADE : <span class="text-slate-200 font-semibold">{date_maj}</span></p>
             </div>
             <input type="text" id="searchInput" onkeyup="filtrerTableau()" placeholder="🔍 Rechercher (nom, cours, date)..." 
@@ -475,40 +449,14 @@ def generer_html(cours):
             <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-400"></span> Anciens cours (-7 jours)</span>
         </div>
 
-        <!-- ONGLETS -->
-        <div class="border-b border-gray-200 bg-white">
-            <nav class="flex -mb-px px-6 gap-6">
-                <button onclick="changerOnglet('tab-voitures')" id="btn-tab-voitures" class="tab-btn py-4 px-1 border-b-2 font-bold text-sm text-blue-600 border-blue-600">
-                    🚘 Voiture à réserver ({len(voitures_requises)})
-                </button>
-                <button onclick="changerOnglet('tab-global')" id="btn-tab-global" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700">
-                    📅 Planning Global ADE ({len(cours)})
-                </button>
-            </nav>
-        </div>
-
-        <div id="tab-voitures" class="tab-content">{generer_tableau_html(voitures_requises, inclure_colonne_voiture=False)}</div>
-        <div id="tab-global" class="tab-content hidden">{generer_tableau_html(cours, inclure_colonne_voiture=True)}</div>
+        {generer_tableau_html(cours)}
 
     </div>
 
     <script>
-        function changerOnglet(tabId) {{
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {{
-                el.classList.remove('text-blue-600', 'border-blue-600', 'font-bold');
-                el.classList.add('text-gray-500', 'border-transparent', 'font-medium');
-            }});
-            document.getElementById(tabId).classList.remove('hidden');
-            const btn = document.getElementById('btn-' + tabId);
-            btn.classList.add('text-blue-600', 'border-blue-600', 'font-bold');
-            btn.classList.remove('text-gray-500', 'border-transparent', 'font-medium');
-        }}
-
         function filtrerTableau() {{
             const input = document.getElementById('searchInput').value.toLowerCase();
-            const activeTab = document.querySelector('.tab-content:not(.hidden)');
-            const rows = activeTab.querySelectorAll('tbody tr');
+            const rows = document.querySelectorAll('tbody tr');
             rows.forEach(row => {{
                 const text = row.innerText.toLowerCase();
                 row.style.display = text.includes(input) ? '' : 'none';
@@ -532,7 +480,7 @@ def generer_html(cours):
 if __name__ == "__main__":
     cours = extraire_cours()
 
-    # Génération systématique du fichier HTML (évite l'échec de la pipeline en cas d'erreur de téléchargement)
+    # Génération systématique du fichier HTML
     generer_html(cours)
 
     if cours:
