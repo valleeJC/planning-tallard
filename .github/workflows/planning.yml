@@ -29,20 +29,23 @@ jobs:
       - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
         run: |
+          # Ajout explicite de Git au PATH de la session PowerShell
+          $env:Path += ";C:\Program Files\Git\cmd"
+
           # 1. Configuration de l'identité Git pour le commit
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Création/bascule sur la branche orphan gh-pages
+          # 2. Création/bascule sur la branche orphan gh-pages-temp
           git checkout --orphan gh-pages-temp
 
-          # 3. Nettoyage de l'index et ajout des fichiers générés
+          # 3. Nettoyage de l'index et préparation des fichiers
           git rm -rf .
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { Copy-Item Planning_Voitures_Tallard.xlsx public\ }
 
-          # 4. Déplacement des fichiers à la racine de la branche
+          # 4. Déplacement des fichiers à la racine
           Move-Item public\* . -Force
           Remove-Item public -Recurse -Force
 
