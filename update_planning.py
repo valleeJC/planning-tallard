@@ -47,18 +47,20 @@ HEADERS = {
 # 2. EXTRACTION ADE (AVEC SÉCURITÉ RÉSEAU)
 # ==============================================================================
 
-def telecharger_ical_avec_retry(url, max_retries=3, delai=5):
-    for essai in range(1, max_retries + 1):
+def telecharger_ical_avec_retry(url, retries=2, backoff_factor=1):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+    for i in range(retries):
         try:
-            response = requests.get(url, headers=HEADERS, timeout=30, verify=False)
+            response = requests.get(url, headers=headers, timeout=(5, 5))
             response.raise_for_status()
             return response.content
         except requests.RequestException as e:
-            print(f"⚠️ Tentative {essai}/{max_retries} échouée ({e})")
-            if essai < max_retries:
-                time.sleep(delai)
-            else:
+            print(f"⚠️ Tentative {i+1}/{retries} échouée")
+            if i == retries - 1:
                 raise e
+            time.sleep(backoff_factor * (i + 1))
 
 
 def est_enseignant_autorise(texte_evenement):
@@ -248,7 +250,7 @@ def generer_excel(liste_cours):
     df_voiture_requise = df_clean[df_clean["Besoin Voiture Service"] == "OUI (Voiture requise)"]
 
     with pd.ExcelWriter(FICHIER_EXCEL_TEMP, engine="openpyxl") as writer:
-        df_voiture_requise.to_excel(writer, sheet_name="Voitures à réserver", index=False)
+        df_voiture_requise.to_excel(writer, sheet_name="Voiture à réserver", index=False)
         df_clean.to_excel(writer, sheet_name="Planning Global ADE", index=False)
 
     appliquer_mise_en_forme_excel(FICHIER_EXCEL_TEMP)
@@ -332,7 +334,7 @@ def generer_html(cours):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning Voitures - Tallard</title>
+    <title>Planning Voiture - Tallard</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen p-4 md:p-8">
