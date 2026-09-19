@@ -342,7 +342,7 @@ def generer_html(cours):
 
         <div class="bg-slate-900 text-white p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold">🚗 Planning Voitures & Cours — Tallard</h1>
+                <h1 class="text-2xl font-bold">🚗 Planning Voiture & Cours — Tallard</h1>
                 <p class="text-slate-400 text-sm mt-1">Dernière actualisation ADE : <span class="text-slate-200 font-semibold">{date_maj}</span></p>
             </div>
             <input type="text" id="searchInput" onkeyup="filtrerTableau()" placeholder="🔍 Rechercher (nom, cours, date)..." 
@@ -361,7 +361,7 @@ def generer_html(cours):
         <div class="border-b border-gray-200 bg-white">
             <nav class="flex -mb-px px-6 gap-6">
                 <button onclick="changerOnglet('tab-voitures')" id="btn-tab-voitures" class="tab-btn py-4 px-1 border-b-2 font-bold text-sm text-blue-600 border-blue-600">
-                    🚘 Voitures à réserver ({len(voitures_requises)})
+                    🚘 Voiture à réserver ({len(voitures_requises)})
                 </button>
                 <button onclick="changerOnglet('tab-global')" id="btn-tab-global" class="tab-btn py-4 px-1 border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700">
                     📅 Planning Global ADE ({len(cours)})
