@@ -14,10 +14,6 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
-defaults:
-  run:
-    shell: powershell
-
 jobs:
   build-and-deploy:
     environment:
@@ -39,7 +35,8 @@ jobs:
         run: |
           python update_planning.py
 
-      - name: Préparer les fichiers
+      - name: Préparer les fichiers (PowerShell)
+        shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
@@ -52,6 +49,8 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'public'
+        env:
+          PATH: "C:\\Program Files\\Git\\usr\\bin;${{ env.PATH }}"
 
       - name: Déployer
         id: deployment
