@@ -434,7 +434,7 @@ def generer_html(cours):
 
         <div class="bg-slate-900 text-white p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold">🚗 Planning Réservation Voiture — Tallard ({len(cours)})</h1>
+                <h1 class="text-2xl font-bold">🚗 Planning Voiture — Tallard ({len(cours)})</h1>
                 <p class="text-slate-400 text-sm mt-1">Dernière actualisation ADE : <span class="text-slate-200 font-semibold">{date_maj}</span></p>
             </div>
             <input type="text" id="searchInput" onkeyup="filtrerTableau()" placeholder="🔍 Rechercher (nom, cours, date)..." 
