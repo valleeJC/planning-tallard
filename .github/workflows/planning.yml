@@ -34,26 +34,30 @@ jobs:
           # 1. Ajout du chemin Git au PATH
           $env:Path += ";C:\Program Files\Git\cmd;C:\Program Files\Git\bin"
 
-          # 2. Copie directe du fichier généré vers index.html
-          Copy-Item Planning_Voitures_Tallard.html index.html -Force
-
-          # 3. Configuration de l'identité Git
+          # 2. Configuration de l'identité Git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 4. Bascule sur la branche orphan gh-pages-temp sans effacer le répertoire de travail
+          # 3. Nettoyage préventif des branches temporaires locales si elles existent
+          git checkout main -f
+          git branch -D gh-pages-temp -ErrorAction SilentlyContinue
+
+          # 4. Copie du HTML généré vers index.html
+          Copy-Item Planning_Voitures_Tallard.html index.html -Force
+
+          # 5. Création de la branche orpheline propre
           git checkout --orphan gh-pages-temp
 
-          # 5. Ajout explicite des fichiers de rendu à l'index Git
+          # 6. Ajout forcé des fichiers de rendu
           git add -f index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { 
               git add -f Planning_Voitures_Tallard.xlsx 
           }
 
-          # 6. Commit et Push forcé vers la branche distante gh-pages
+          # 7. Commit et Push forcé vers la branche distancée gh-pages
           git commit -m "🤖 Mise à jour automatique du planning"
           git push origin gh-pages-temp:gh-pages --force
 
-          # 7. Nettoyage : retour à la branche principale
+          # 8. Nettoyage : retour sur main et suppression de la branche temporaire
           git checkout main -f
-          git branch -D gh-pages-temp
+          git branch -D gh-pages-temp -ErrorAction SilentlyContinue
