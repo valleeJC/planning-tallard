@@ -29,6 +29,9 @@ jobs:
       - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
         run: |
+          # Ajout forcé du dossier d'installation par défaut de Git au PATH
+          $env:Path += ";C:\Program Files\Git\cmd;C:\Program Files\Git\bin"
+
           # 1. Configuration de l'identité Git pour le commit
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
