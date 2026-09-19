@@ -21,6 +21,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests icalendar pandas openpyxl urllib3 tzdata
+
       - name: Exécuter le script
         env:
           PYTHONIOENCODING: "utf-8"
@@ -33,31 +34,26 @@ jobs:
           # 1. Ajout du chemin Git au PATH
           $env:Path += ";C:\Program Files\Git\cmd;C:\Program Files\Git\bin"
 
-          # 2. Vérification/Initialisation du dépôt Git local si nécessaire
-          if (-not (Test-Path .git)) {
-              git init
-              git remote add origin "https://github.com/$env:GITHUB_REPOSITORY.git"
-          }
+          # 2. Copie directe du fichier généré vers index.html
+          Copy-Item Planning_Voitures_Tallard.html index.html -Force
 
           # 3. Configuration de l'identité Git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 4. Création/bascule sur la branche orphan gh-pages-temp
+          # 4. Bascule sur la branche orphan gh-pages-temp sans effacer le répertoire de travail
           git checkout --orphan gh-pages-temp
 
-          # 5. Nettoyage de l'index et préparation du dossier public
-          git rm -rf . -ErrorAction SilentlyContinue
-          New-Item -ItemType Directory -Force -Path public
-          Copy-Item Planning_Voitures_Tallard.html public\index.html
-          if (Test-Path Planning_Voitures_Tallard.xlsx) { Copy-Item Planning_Voitures_Tallard.xlsx public\ }
+          # 5. Ajout explicite des fichiers de rendu à l'index Git
+          git add -f index.html
+          if (Test-Path Planning_Voitures_Tallard.xlsx) { 
+              git add -f Planning_Voitures_Tallard.xlsx 
+          }
 
-          # 6. Déplacement des fichiers à la racine
-          Move-Item public\* . -Force
-          Remove-Item public -Recurse -Force
-
-          # 7. Commit et Push forcé vers la branche gh-pages
-          git add index.html
-          if (Test-Path Planning_Voitures_Tallard.xlsx) { git add Planning_Voitures_Tallard.xlsx }
-          git commit -m "Mise à jour automatique du planning"
+          # 6. Commit et Push forcé vers la branche distante gh-pages
+          git commit -m "🤖 Mise à jour automatique du planning"
           git push origin gh-pages-temp:gh-pages --force
+
+          # 7. Nettoyage : retour à la branche principale
+          git checkout main -f
+          git branch -D gh-pages-temp
