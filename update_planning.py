@@ -67,7 +67,6 @@ URLS_ADE = {
 ENSEIGNANTS_AUTORISES = [
     "ATTAFI",
     "CORNUEAU",
-    "MOYSAN",
     "GUEUDRE",
     "VALLEE",
     "SANCHEZ",
