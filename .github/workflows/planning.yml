@@ -29,27 +29,44 @@ jobs:
       - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
         run: |
-          # Ajout explicite de Git au PATH de la session PowerShell
-          $env:Path += ";C:\Program Files\Git\cmd"
+          # 1. Recherche dynamique de git.exe sur la machine
+          $gitPath = (Get-Command git.exe -ErrorAction SilentlyContinue).Source
+          if (-not $gitPath) {
+              $possiblePaths = @(
+                  "$env:ProgramFiles\Git\cmd\git.exe",
+                  "$env:LocalAppData\Programs\Git\cmd\git.exe",
+                  "C:\Program Files (x86)\Git\cmd\git.exe"
+              )
+              foreach ($p in $possiblePaths) {
+                  if (Test-Path $p) { $gitPath = $p; break }
+              }
+          }
 
-          # 1. Configuration de l'identité Git pour le commit
+          if (-not $gitPath) {
+              Throw "Git n'a pas été trouvé sur la machine."
+          }
+
+          # Définition d'un alias pour utiliser 'git' de manière transparente
+          Set-Alias -Name git -Value $gitPath
+
+          # 2. Configuration de l'identité Git pour le commit
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Création/bascule sur la branche orphan gh-pages-temp
+          # 3. Création/bascule sur la branche orphan gh-pages-temp
           git checkout --orphan gh-pages-temp
 
-          # 3. Nettoyage de l'index et préparation des fichiers
+          # 4. Nettoyage de l'index et préparation des fichiers
           git rm -rf .
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { Copy-Item Planning_Voitures_Tallard.xlsx public\ }
 
-          # 4. Déplacement des fichiers à la racine
+          # 5. Déplacement des fichiers à la racine
           Move-Item public\* . -Force
           Remove-Item public -Recurse -Force
 
-          # 5. Commit et Push forcé sur la branche gh-pages
+          # 6. Commit et Push forcé sur la branche gh-pages
           git add index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { git add Planning_Voitures_Tallard.xlsx }
           git commit -m "Mise à jour automatique du planning"
