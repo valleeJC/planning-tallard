@@ -14,6 +14,10 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: powershell
+
 jobs:
   build-and-deploy:
     environment:
@@ -35,8 +39,7 @@ jobs:
         run: |
           python update_planning.py
 
-      - name: Préparer les fichiers (PowerShell)
-        shell: powershell
+      - name: Préparer les fichiers
         run: |
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
