@@ -2,23 +2,14 @@ name: Actualisation du Planning
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Exécution automatique tous les jours à 8h (heure française)
-  workflow_dispatch:      # Permet de lancer l'exécution à la main
+    - cron: '0 6 * * *'  # Tous les jours à 8h (heure française)
+  workflow_dispatch:      # Lancement manuel
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
+  contents: write
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-commit:
     runs-on: self-hosted
     steps:
       - name: Récupérer le code
@@ -35,23 +26,15 @@ jobs:
         run: |
           python update_planning.py
 
-      - name: Préparer les fichiers (PowerShell)
+      - name: Préparer le dossier public
         shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { Copy-Item Planning_Voitures_Tallard.xlsx public\ }
 
-      - name: Configurer Pages
-        uses: actions/configure-pages@v5
-
-      - name: Téléverser l'artefact
-        uses: actions/upload-pages-artifact@v3
+      - name: Publier sur la branche gh-pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: 'public'
-        env:
-          PATH: "C:\\Program Files\\Git\\usr\\bin;${{ env.PATH }}"
-
-      - name: Déployer
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
