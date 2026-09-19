@@ -19,7 +19,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: self-hosted
+    runs-on: [self-hosted, Windows, X64]
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
