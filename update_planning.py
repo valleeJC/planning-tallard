@@ -74,6 +74,7 @@ ENSEIGNANTS_AUTORISES = [
     "AMADEI",
     "MAZOYER",
     "RAYNAL",
+    "MOYSAN",
 ]
 
 FICHIER_EXCEL_SORTIE = "Planning_Voitures_Tallard.xlsx"
