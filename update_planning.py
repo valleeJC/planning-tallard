@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, date
 import os
 import re
 import time
+import zoneinfo  # Module natif pour la gestion automatique des fuseaux horaires (Paris)
 from icalendar import Calendar
 import pandas as pd
 import requests
@@ -14,19 +15,68 @@ from openpyxl.utils import get_column_letter
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # ==============================================================================
+# 0. GESTION DU FUSEAU HORAIRE (EUROPE/PARIS)
+# ==============================================================================
+
+TZ_PARIS = zoneinfo.ZoneInfo("Europe/Paris")
+
+
+def convertir_en_heure_paris(dt_object):
+    """Convertit un objet datetime UTC issu du iCal vers l'heure locale française (Europe/Paris).
+
+    Gère automatiquement l'heure d'été (UTC+2) et l'heure d'hiver (UTC+1).
+    """
+    if dt_object is None:
+        return None
+
+    # Si c'est un objet vDDDTypes d'icalendar, on récupère la propriété .dt
+    if hasattr(dt_object, "dt"):
+        dt_object = dt_object.dt
+
+    # S'il s'agit uniquement d'un objet date (sans heure), on le renvoie tel quel
+    if not isinstance(dt_object, datetime):
+        return dt_object
+
+    # Si le datetime contient des informations de fuseau horaire (ex: UTC)
+    if dt_object.tzinfo is not None:
+        return dt_object.astimezone(TZ_PARIS)
+    else:
+        # Si le datetime est "naïf" (sans fuseau), on le force en UTC avant de basculer sur Paris
+        return dt_object.replace(tzinfo=zoneinfo.ZoneInfo("UTC")).astimezone(
+            TZ_PARIS
+        )
+
+
+# ==============================================================================
 # 1. CONFIGURATION
 # ==============================================================================
 
 URLS_ADE = {
-    "LP MIA": "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=127685,127687,127688&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15",
-    "BUT 3 SNRV": "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=58374,58375&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15",
-    "M1 MPAD": "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=70202&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15",
-    "M2 MPAD": "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=391&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15",
+    "LP MIA": (
+        "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=127685,127687,127688&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15"
+    ),
+    "BUT 3 SNRV": (
+        "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=58374,58375&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15"
+    ),
+    "M1 MPAD": (
+        "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=70202&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15"
+    ),
+    "M2 MPAD": (
+        "https://agenda-web-consult.univ-amu.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?projectId=8&resources=391&calType=ical&firstDate=2026-08-17&lastDate=2027-08-15"
+    ),
 }
 
 ENSEIGNANTS_AUTORISES = [
-    "ATTAFI", "CORNUEAU", "MOYSAN", "GUEUDRE",
-    "VALLEE", "SANCHEZ", "CHAVES-JACOB", "AMADEI", "MAZOYER"
+    "ATTAFI",
+    "CORNUEAU",
+    "MOYSAN",
+    "GUEUDRE",
+    "VALLEE",
+    "SANCHEZ",
+    "CHAVES-JACOB",
+    "AMADEI",
+    "MAZOYER",
+    "RAYNAL",
 ]
 
 FICHIER_EXCEL_SORTIE = "Planning_Voitures_Tallard.xlsx"
@@ -34,22 +84,34 @@ FICHIER_EXCEL_TEMP = "Planning_Voitures_Tallard_temp.xlsx"
 FICHIER_HTML_SORTIE = "Planning_Voitures_Tallard.html"
 
 JOURS_FR = {
-    "Monday": "Lundi", "Tuesday": "Mardi", "Wednesday": "Mercredi",
-    "Thursday": "Jeudi", "Friday": "Vendredi", "Saturday": "Samedi", "Sunday": "Dimanche"
+    "Monday": "Lundi",
+    "Tuesday": "Mardi",
+    "Wednesday": "Mercredi",
+    "Thursday": "Jeudi",
+    "Friday": "Vendredi",
+    "Saturday": "Samedi",
+    "Sunday": "Dimanche",
 }
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,"
+        " like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    )
 }
 
 
 # ==============================================================================
-# 2. EXTRACTION ADE (AVEC SÉCURITÉ RÉSEAU)
+# 2. EXTRACTION ADE (AVEC SÉCURITÉ RÉSEAU & CONVERSION HORAIRE)
 # ==============================================================================
+
 
 def telecharger_ical_avec_retry(url, retries=2, backoff_factor=1):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            " (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
     }
     for i in range(retries):
         try:
@@ -91,8 +153,16 @@ def extraire_cours():
                 summary = str(component.get("summary", ""))
                 description = str(component.get("description", ""))
                 location = str(component.get("location", ""))
-                dtstart = component.get("dtstart").dt
-                dtend = component.get("dtend").dt
+
+                # Extraction et conversion instantanée des heures UTC vers l'heure locale française
+                dtstart_raw = component.get("dtstart")
+                dtend_raw = component.get("dtend")
+
+                if not dtstart_raw:
+                    continue
+
+                dtstart = convertir_en_heure_paris(dtstart_raw)
+                dtend = convertir_en_heure_paris(dtend_raw)
 
                 if not isinstance(dtstart, datetime):
                     continue
@@ -115,7 +185,9 @@ def extraire_cours():
                     motif = "Présentiel - Enseignant habilité"
 
                 dt_date = dtstart.date()
-                jour_fr = JOURS_FR.get(dtstart.strftime("%A"), dtstart.strftime("%A"))
+                jour_fr = JOURS_FR.get(
+                    dtstart.strftime("%A"), dtstart.strftime("%A")
+                )
 
                 # Catégorisation temporelle pour tri & affichage
                 est_7j_passes = il_y_a_7j <= dt_date < aujourdhui
@@ -139,7 +211,10 @@ def extraire_cours():
                     "Jour": jour_fr,
                     "Heure Début": dtstart.strftime("%H:%M"),
                     "Heure Fin": dtend.strftime("%H:%M"),
-                    "Horaires": f"{dtstart.strftime('%H:%M')} - {dtend.strftime('%H:%M')}",
+                    "Horaires": (
+                        f"{dtstart.strftime('%H:%M')} -"
+                        f" {dtend.strftime('%H:%M')}"
+                    ),
                     "Cohorte": cohorte,
                     "Matière / Cours": summary,
                     "Enseignant détecté": nom_prof,
@@ -151,7 +226,7 @@ def extraire_cours():
                     "est_7j_passes": est_7j_passes,
                     "est_7j_futurs": est_7j_futurs,
                     "est_vieux_passe": est_vieux_passe,
-                    "ordre_groupe": ordre_groupe
+                    "ordre_groupe": ordre_groupe,
                 })
 
         except Exception as e:
@@ -166,26 +241,37 @@ def extraire_cours():
 # 3. GENERATION EXCEL
 # ==============================================================================
 
+
 def appliquer_mise_en_forme_excel(chemin_fichier):
     wb = openpyxl.load_workbook(chemin_fichier)
 
-    fill_header = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
+    fill_header = PatternFill(
+        start_color="1F4E78", end_color="1F4E78", fill_type="solid"
+    )
     font_header = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
 
-    fill_bleu = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+    fill_bleu = PatternFill(
+        start_color="D9E1F2", end_color="D9E1F2", fill_type="solid"
+    )
     font_bleu = Font(name="Calibri", size=10, color="1F4E78", bold=True)
 
-    fill_vert = PatternFill(start_color="E2EFDA", end_color="E2EFDA", fill_type="solid")
+    fill_vert = PatternFill(
+        start_color="E2EFDA", end_color="E2EFDA", fill_type="solid"
+    )
     font_vert = Font(name="Calibri", size=10, color="375623", bold=True)
 
-    fill_rouge = PatternFill(start_color="FCE4D6", end_color="FCE4D6", fill_type="solid")
+    fill_rouge = PatternFill(
+        start_color="FCE4D6", end_color="FCE4D6", fill_type="solid"
+    )
     font_rouge = Font(name="Calibri", size=10, color="C00000")
 
     font_normal = Font(name="Calibri", size=10)
 
     thin_border = Border(
-        left=Side(style='thin', color='D9D9D9'), right=Side(style='thin', color='D9D9D9'),
-        top=Side(style='thin', color='D9D9D9'), bottom=Side(style='thin', color='D9D9D9')
+        left=Side(style="thin", color="D9D9D9"),
+        right=Side(style="thin", color="D9D9D9"),
+        top=Side(style="thin", color="D9D9D9"),
+        bottom=Side(style="thin", color="D9D9D9"),
     )
 
     aujourdhui = date.today()
@@ -200,12 +286,16 @@ def appliquer_mise_en_forme_excel(chemin_fichier):
             cell.font = font_header
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
-        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
+        for row in ws.iter_rows(
+            min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column
+        ):
             date_str = ws.cell(row=row[0].row, column=1).value
             dt_cours = None
             if date_str:
                 try:
-                    dt_cours = datetime.strptime(str(date_str), "%d/%m/%Y").date()
+                    dt_cours = datetime.strptime(
+                        str(date_str), "%d/%m/%Y"
+                    ).date()
                 except ValueError:
                     pass
 
@@ -230,7 +320,7 @@ def appliquer_mise_en_forme_excel(chemin_fichier):
             max_len = 0
             col_letter = get_column_letter(col[0].column)
             for cell in col:
-                val = str(cell.value or '')
+                val = str(cell.value or "")
                 if len(val) > max_len:
                     max_len = len(val)
             ws.column_dimensions[col_letter].width = max(max_len + 3, 12)
@@ -244,14 +334,28 @@ def generer_excel(liste_cours):
 
     df = pd.DataFrame(liste_cours)
     df_clean = df.drop(
-        columns=['_dt_start', 'Horaires', 'code_statut', 'est_7j_passes', 'est_7j_futurs', 'est_vieux_passe',
-                 'ordre_groupe'])
+        columns=[
+            "_dt_start",
+            "Horaires",
+            "code_statut",
+            "est_7j_passes",
+            "est_7j_futurs",
+            "est_vieux_passe",
+            "ordre_groupe",
+        ]
+    )
 
-    df_voiture_requise = df_clean[df_clean["Besoin Voiture Service"] == "OUI (Voiture requise)"]
+    df_voiture_requise = df_clean[
+        df_clean["Besoin Voiture Service"] == "OUI (Voiture requise)"
+    ]
 
     with pd.ExcelWriter(FICHIER_EXCEL_TEMP, engine="openpyxl") as writer:
-        df_voiture_requise.to_excel(writer, sheet_name="Voiture à réserver", index=False)
-        df_clean.to_excel(writer, sheet_name="Planning Global ADE", index=False)
+        df_voiture_requise.to_excel(
+            writer, sheet_name="Voiture à réserver", index=False
+        )
+        df_clean.to_excel(
+            writer, sheet_name="Planning Global ADE", index=False
+        )
 
     appliquer_mise_en_forme_excel(FICHIER_EXCEL_TEMP)
 
@@ -260,7 +364,10 @@ def generer_excel(liste_cours):
             if os.path.exists(FICHIER_EXCEL_SORTIE):
                 os.remove(FICHIER_EXCEL_SORTIE)
             os.rename(FICHIER_EXCEL_TEMP, FICHIER_EXCEL_SORTIE)
-            print(f"📊 Fichier Excel généré : {os.path.abspath(FICHIER_EXCEL_SORTIE)}")
+            print(
+                "📊 Fichier Excel généré :"
+                f" {os.path.abspath(FICHIER_EXCEL_SORTIE)}"
+            )
             break
         except PermissionError:
             time.sleep(3)
@@ -270,11 +377,19 @@ def generer_excel(liste_cours):
 # 4. GENERATION HTML
 # ==============================================================================
 
+
 def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
     if not cours_list:
-        return "<p class='p-4 text-gray-500'>Aucun cours trouvé ou données indisponibles.</p>"
+        return (
+            "<p class='p-4 text-gray-500'>Aucun cours trouvé ou données"
+            " indisponibles.</p>"
+        )
 
-    colonne_voiture_th = '<th class="p-3">Besoin Voiture</th>' if inclure_colonne_voiture else ''
+    colonne_voiture_th = (
+        '<th class="p-3">Besoin Voiture</th>'
+        if inclure_colonne_voiture
+        else ""
+    )
 
     html = f"""
     <div class="overflow-x-auto">
@@ -307,7 +422,12 @@ def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
             row_class = "bg-white text-gray-800 hover:bg-gray-50"
             badge_class = "bg-gray-100 text-gray-700"
 
-        colonne_voiture_td = f'<td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold {badge_class}">{c["Besoin Voiture Service"]}</span></td>' if inclure_colonne_voiture else ''
+        colonne_voiture_td = (
+            f'<td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs'
+            f' font-bold {badge_class}">{c["Besoin Voiture Service"]}</span></td>'
+            if inclure_colonne_voiture
+            else ""
+        )
 
         html += f"""
         <tr class="{row_class} transition-colors">
@@ -327,7 +447,7 @@ def generer_tableau_html(cours_list, inclure_colonne_voiture=True):
 
 def generer_html(cours):
     voitures_requises = [c for c in cours if c["code_statut"] == "OUI"]
-    date_maj = datetime.now().strftime("%d/%m/%Y à %H:%M")
+    date_maj = datetime.now(TZ_PARIS).strftime("%d/%m/%Y à %H:%M")
 
     html_content = f"""<!DOCTYPE html>
 <html lang="fr">
@@ -419,4 +539,4 @@ if __name__ == "__main__":
 
     if cours:
         generer_excel(cours)
-        print("\n✅ Fichiers mis à jour.")
+        print("\n✅ Fichiers mis à jour avec la bonne heure locale française.")
