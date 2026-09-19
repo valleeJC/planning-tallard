@@ -15,7 +15,7 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Télécharge tout le dépôt Git avec le dossier .git
+          fetch-depth: 0
 
       - name: Installer les dépendances
         run: |
@@ -31,27 +31,33 @@ jobs:
       - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
         run: |
-          # Ajout du chemin Git au PATH
+          # 1. Ajout du chemin Git au PATH
           $env:Path += ";C:\Program Files\Git\cmd;C:\Program Files\Git\bin"
 
-          # 1. Configuration de l'identité Git
+          # 2. Vérification/Initialisation du dépôt Git local si nécessaire
+          if (-not (Test-Path .git)) {
+              git init
+              git remote add origin "https://github.com/$env:GITHUB_REPOSITORY.git"
+          }
+
+          # 3. Configuration de l'identité Git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Création/bascule sur la branche temporaire
+          # 4. Création/bascule sur la branche orphan gh-pages-temp
           git checkout --orphan gh-pages-temp
 
-          # 3. Nettoyage et préparation des fichiers
-          git rm -rf .
+          # 5. Nettoyage de l'index et préparation du dossier public
+          git rm -rf . -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { Copy-Item Planning_Voitures_Tallard.xlsx public\ }
 
-          # 4. Déplacement des fichiers à la racine
+          # 6. Déplacement des fichiers à la racine
           Move-Item public\* . -Force
           Remove-Item public -Recurse -Force
 
-          # 5. Commit et Push forcé sur gh-pages
+          # 7. Commit et Push forcé vers la branche gh-pages
           git add index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { git add Planning_Voitures_Tallard.xlsx }
           git commit -m "Mise à jour automatique du planning"
