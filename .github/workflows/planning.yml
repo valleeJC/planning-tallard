@@ -26,15 +26,28 @@ jobs:
         run: |
           python update_planning.py
 
-      - name: Préparer le dossier public
+      - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
         run: |
+          # 1. Configuration de l'identité Git pour le commit
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 2. Création/bascule sur la branche orphan gh-pages
+          git checkout --orphan gh-pages-temp
+
+          # 3. Nettoyage de l'index et ajout des fichiers générés
+          git rm -rf .
           New-Item -ItemType Directory -Force -Path public
           Copy-Item Planning_Voitures_Tallard.html public\index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { Copy-Item Planning_Voitures_Tallard.xlsx public\ }
 
-      - name: Publier sur la branche gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          # 4. Déplacement des fichiers à la racine de la branche
+          Move-Item public\* . -Force
+          Remove-Item public -Recurse -Force
+
+          # 5. Commit et Push forcé sur la branche gh-pages
+          git add index.html
+          if (Test-Path Planning_Voitures_Tallard.xlsx) { git add Planning_Voitures_Tallard.xlsx }
+          git commit -m "Mise à jour automatique du planning"
+          git push origin gh-pages-temp:gh-pages --force
