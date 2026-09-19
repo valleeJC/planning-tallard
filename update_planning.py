@@ -22,29 +22,27 @@ TZ_PARIS = zoneinfo.ZoneInfo("Europe/Paris")
 
 
 def convertir_en_heure_paris(dt_object):
-    """Convertit un objet datetime UTC issu du iCal vers l'heure locale française (Europe/Paris).
+    """Gère l'attribution du fuseau horaire Europe/Paris sans appliquer
 
-    Gère automatiquement l'heure d'été (UTC+2) et l'heure d'hiver (UTC+1).
+    de décalage UTC intempestif sur les heures locales transmises par ADE.
     """
     if dt_object is None:
         return None
 
-    # Si c'est un objet vDDDTypes d'icalendar, on récupère la propriété .dt
+    # Extraction de l'objet datetime brut depuis l'objet icalendar
     if hasattr(dt_object, "dt"):
         dt_object = dt_object.dt
 
-    # S'il s'agit uniquement d'un objet date (sans heure), on le renvoie tel quel
+    # S'il s'agit d'un objet date simple (ex: événement journée entière), on le laisse tel quel
     if not isinstance(dt_object, datetime):
         return dt_object
 
-    # Si le datetime contient des informations de fuseau horaire (ex: UTC)
-    if dt_object.tzinfo is not None:
-        return dt_object.astimezone(TZ_PARIS)
-    else:
-        # Si le datetime est "naïf" (sans fuseau), on le force en UTC avant de basculer sur Paris
-        return dt_object.replace(tzinfo=zoneinfo.ZoneInfo("UTC")).astimezone(
-            TZ_PARIS
-        )
+    # Si l'objet est 'naïf' (cas standard ADE), on lui assigne directement le fuseau Paris
+    if dt_object.tzinfo is None:
+        return dt_object.replace(tzinfo=TZ_PARIS)
+
+    # Si le fichier iCal contenait déjà une timezone explicite (ex: UTC)
+    return dt_object.astimezone(TZ_PARIS)
 
 
 # ==============================================================================
