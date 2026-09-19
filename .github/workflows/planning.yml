@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Télécharge tout le dépôt Git avec le dossier .git
 
       - name: Installer les dépendances
         run: |
@@ -29,14 +31,14 @@ jobs:
       - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
         run: |
-          # Ajout forcé du dossier d'installation par défaut de Git au PATH
+          # Ajout du chemin Git au PATH
           $env:Path += ";C:\Program Files\Git\cmd;C:\Program Files\Git\bin"
 
-          # 1. Configuration de l'identité Git pour le commit
+          # 1. Configuration de l'identité Git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 2. Création/bascule sur la branche orphan gh-pages-temp
+          # 2. Création/bascule sur la branche temporaire
           git checkout --orphan gh-pages-temp
 
           # 3. Nettoyage et préparation des fichiers
@@ -49,7 +51,7 @@ jobs:
           Move-Item public\* . -Force
           Remove-Item public -Recurse -Force
 
-          # 5. Commit et Push forcé sur la branche gh-pages
+          # 5. Commit et Push forcé sur gh-pages
           git add index.html
           if (Test-Path Planning_Voitures_Tallard.xlsx) { git add Planning_Voitures_Tallard.xlsx }
           git commit -m "Mise à jour automatique du planning"
