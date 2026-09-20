@@ -17,6 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Installer les dépendances
         run: |
           python -m pip install --upgrade pip
