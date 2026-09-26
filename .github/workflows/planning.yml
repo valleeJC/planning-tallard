@@ -31,7 +31,7 @@ jobs:
         env:
           PYTHONIOENCODING: "utf-8"
         run: |
-          python update_planning.py
+          python update_planning_v2.py
 
       - name: Déployer sur gh-pages (PowerShell)
         shell: powershell
