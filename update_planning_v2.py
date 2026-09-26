@@ -630,18 +630,18 @@ def generer_html_v2(cours):
         let currentMonday = getMonday(new Date());
         let currentView = 'grid';
 
-        function getMonday(d) {
+       function getMonday(d) {
             d = new Date(d);
             const day = d.getDay(); // 0: Dimanche, 1: Lundi, ..., 6: Samedi
             
-            // Si c'est Samedi (6) ou Dimanche (0), on bascule sur la semaine suivante
+            // Si c'est Samedi (6) ou Dimanche (0), on bascule directement sur la semaine suivante
             if (day === 6 || day === 0) {
-                const daysToAdd = (day === 6) ? 2 : 1; // Samedi +2j -> Lundi pro, Dimanche +1j -> Lundi pro
+                const daysToAdd = (day === 6) ? 2 : 1;
                 d.setDate(d.getDate() + daysToAdd);
             } else {
-                // Du lundi au vendredi : calcul standard du lundi de la semaine en cours
-                const diff = d.getDate() - day + 1;
-                d.setDate(diff);
+                // Du lundi (1) au vendredi (5) : on recule du nombre de jours nécessaires depuis le lundi
+                const diffToMonday = day - 1; // Lundi -> 0, Mardi -> 1, ..., Vendredi -> 4
+                d.setDate(d.getDate() - diffToMonday);
             }
         
             d.setHours(0, 0, 0, 0);
