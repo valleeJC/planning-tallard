@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning Voiture — Tallard v2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Force l'espace de la scrollbar sur les conteneurs pour aligner parfaitement la grille */
+        .sync-scroll-container {
+            overflow-y: scroll;
+        }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 60px repeat(5, minmax(0, 1fr));
+            width: 100%;
+        }
+        .time-line {
+            position: absolute;
+            left: 60px;
+            right: 0;
+            border-top: 1.5px dashed #cbd5e1;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .time-label {
+            position: absolute;
+            left: 4px;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-family: monospace;
+            color: #64748b;
+            background-color: #f8fafc;
+            padding: 0 2px;
+            border-radius: 2px;
+            z-index: 11;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased text-slate-900 flex flex-col">
+
+    <!-- BARRE SUPÉRIEURE FIXE -->
+    <header class="bg-slate-900 text-white p-4 shadow-md shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+
+            <div class="flex items-center justify-between md:justify-start gap-4">
+                <div>
+                    <h1 class="text-xl font-bold flex items-center gap-2">
+                        <span>🚗</span>
+                        <span>Planning Voiture — Tallard</span>
+                        <span class="text-xs font-normal bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">v2</span>
+                    </h1>
+                    <p class="text-slate-400 text-xs mt-0.5">Dernière synchronisation ADE : <span class="text-slate-200 font-semibold">26/09/2026 à 19:06</span></p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 self-end md:self-auto">
+                <div class="relative w-64">
+                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="🔍 Filtrer (Nom, Promo, Salle)..." 
+                           class="w-full bg-slate-800 text-slate-100 placeholder-slate-400 text-xs px-3 py-2 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="bg-slate-800 p-1 rounded-lg flex gap-1 border border-slate-700 shrink-0">
+                    <button id="btnViewGrid" onclick="switchView('grid')" class="px-3 py-1.5 text-xs font-medium rounded-md transition-all bg-blue-600 text-white shadow">
+                        📅 Emploi du temps
+                    </button>
+                    <button id="btnViewTable" onclick="switchView('table')" class="px-3 py-1.5 text-xs font-medium rounded-md transition-all text-slate-300 hover:text-white hover:bg-slate-700">
+                        📋 Vue Tableau
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col overflow-hidden">
+
+        <!-- BARRE DE LÉGENDE CONDITIONNELLE -->
+        <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 mb-4 flex items-center justify-between text-xs shrink-0">
+            <!-- Légende pour l'emploi du temps -->
+            <div id="gridLegend" class="flex items-center gap-3 flex-wrap">
+                <span class="font-semibold text-slate-500">Cohortes:</span>
+                <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-blue-100 text-blue-900 border border-blue-200 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> LP MIA</span>
+                <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-100 text-emerald-900 border border-emerald-200 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> BUT 3 SNRV</span>
+                <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-amber-100 text-amber-900 border border-amber-200 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span> M1 MPAD</span>
+                <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-purple-100 text-purple-900 border border-purple-200 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span> M2 MPAD</span>
+            </div>
+
+            <!-- Légende pour la vue tableau -->
+            <div id="tableLegend" class="hidden flex items-center gap-4 text-slate-600 font-medium">
+                <span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-100 text-blue-900"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 2 jours passés</span>
+                <span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-900"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 7 jours futurs</span>
+                <span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-red-100 text-red-800"><span class="w-2.5 h-2.5 rounded-full bg-red-400"></span> Ancien (-2j)</span>
+            </div>
+        </div>
+
+        <!-- VIEW 1 : EMPLOI DU TEMPS -->
+        <div id="viewGrid" class="flex-1 bg-white rounded-lg shadow-sm border border-slate-200 flex flex-col min-h-0 overflow-hidden">
+
+            <div class="p-3 border-b border-slate-200 bg-slate-50 grid grid-cols-3 items-center shrink-0">
+                <div></div>
+                <div class="flex items-center justify-center gap-1">
+                    <button onclick="changeWeek(-1)" class="p-1.5 hover:bg-slate-200 rounded-md text-slate-600 transition" title="Semaine précédente">
+                        ◀
+                    </button>
+                    <button onclick="goToday()" class="px-3 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-xs rounded-md transition">
+                        Aujourd'hui
+                    </button>
+                    <button onclick="changeWeek(1)" class="p-1.5 hover:bg-slate-200 rounded-md text-slate-600 transition" title="Semaine suivante">
+                        ▶
+                    </button>
+                </div>
+                <h2 id="currentWeekTitle" class="text-xs font-bold text-slate-800 text-right">
+                    --
+                </h2>
+            </div>
+
+            <!-- EN-TÊTE DES JOURS (MÊME STRUCTURE DE DEFILEMENT QUE LE CORPS POUR ALIGNEMENT STABILISÉ) -->
+            <div class="sync-scroll-container overflow-y-scroll border-b border-slate-200 bg-slate-100 text-center font-bold text-xs text-slate-700 shrink-0">
+                <div class="grid-layout">
+                    <div class="p-2 border-r border-slate-200 flex items-center justify-center text-slate-400">H</div>
+                    <div id="day-header-0" class="p-2 border-r border-slate-200">Lundi</div>
+                    <div id="day-header-1" class="p-2 border-r border-slate-200">Mardi</div>
+                    <div id="day-header-2" class="p-2 border-r border-slate-200">Mercredi</div>
+                    <div id="day-header-3" class="p-2 border-r border-slate-200">Jeudi</div>
+                    <div id="day-header-4" class="p-2">Vendredi</div>
+                </div>
+            </div>
+
+            <!-- CORPS DU TABLEAU DE BORD -->
+            <div class="flex-1 sync-scroll-container overflow-y-scroll relative min-h-0">
+                <div class="grid-layout relative h-[720px]">
+
+                    <!-- LIGNES HORIZONTAUX DES CRÉNEAUX SPÉCIFIQUES -->
+                    <div class="time-line" style="top: 90px;"></div>
+                    <div class="time-label" style="top: 90px;">08:30</div>
+
+                    <div class="time-line" style="top: 210px;"></div>
+                    <div class="time-label" style="top: 210px;">10:30</div>
+
+                    <div class="time-line" style="top: 330px; border-top-color: #94a3b8;"></div>
+                    <div class="time-label" style="top: 330px; font-weight: bold; color: #475569;">12:30</div>
+
+                    <div class="time-line" style="top: 405px;"></div>
+                    <div class="time-label" style="top: 405px;">13:45</div>
+
+                    <div class="time-line" style="top: 525px;"></div>
+                    <div class="time-label" style="top: 525px;">15:45</div>
+
+                    <div class="time-line" style="top: 645px;"></div>
+                    <div class="time-label" style="top: 645px;">17:45</div>
+
+                    <!-- COLONNE HEURES DE BASE -->
+                    <div class="border-r border-slate-200 bg-slate-50 text-[11px] font-mono text-slate-400 flex flex-col justify-between py-1 select-none">
+                        <div class="h-[60px] text-center">07:00</div>
+                        <div class="h-[60px] text-center">08:00</div>
+                        <div class="h-[60px] text-center">09:00</div>
+                        <div class="h-[60px] text-center">10:00</div>
+                        <div class="h-[60px] text-center">11:00</div>
+                        <div class="h-[60px] text-center">12:00</div>
+                        <div class="h-[60px] text-center">13:00</div>
+                        <div class="h-[60px] text-center">14:00</div>
+                        <div class="h-[60px] text-center">15:00</div>
+                        <div class="h-[60px] text-center">16:00</div>
+                        <div class="h-[60px] text-center">17:00</div>
+                        <div class="h-[60px] text-center">18:00</div>
+                        <div class="h-[60px] text-center">19:00</div>
+                    </div>
+
+                    <!-- COLONNES ALIGNÉES -->
+                    <div id="col-day-0" class="border-r border-slate-200 relative bg-white h-full"></div>
+                    <div id="col-day-1" class="border-r border-slate-200 relative bg-white h-full"></div>
+                    <div id="col-day-2" class="border-r border-slate-200 relative bg-white h-full"></div>
+                    <div id="col-day-3" class="border-r border-slate-200 relative bg-white h-full"></div>
+                    <div id="col-day-4" class="relative bg-white h-full"></div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2 : TABLEAU DÉTAILLÉ -->
+        <div id="viewTable" class="hidden flex-1 bg-white rounded-lg shadow-sm border border-slate-200 overflow-y-auto">
+            
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="bg-slate-800 text-white uppercase text-xs tracking-wider">
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Jour</th>
+                    <th class="p-3">Horaire</th>
+                    <th class="p-3">Cohorte</th>
+                    <th class="p-3">Matière / Cours</th>
+                    <th class="p-3">Enseignant</th>
+                    <th class="p-3">Salle</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+    
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="28/09/2026 Lundi M2 MPAD ECUE 2.32 - Mat. Fab Add MOY CM MOYSAN SALLE TD-PITOT">
+            <td class="p-3 font-semibold">28/09/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add MOY CM</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="29/09/2026 Mardi BUT 3 SNRV R5.05 Construction Hydrau - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">29/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="29/09/2026 Mardi LP MIA S5 - Anglais - CM AMADEI Amphi Polyaéro">
+            <td class="p-3 font-semibold">29/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="29/09/2026 Mardi LP MIA S5 - Anglais - TD1 AMADEI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">29/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - TD1</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="29/09/2026 Mardi LP MIA S5 - Anglais - TD2 AMADEI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">29/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - TD2</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="30/09/2026 Mercredi LP MIA S5 - Mathématiques générales - TD1 ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">30/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:00 - 10:00</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD1</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="30/09/2026 Mercredi LP MIA S5 - Anglais - TD2 AMADEI SALLE TD-VINCI">
+            <td class="p-3 font-semibold">30/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:00 - 10:00</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - TD2</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="30/09/2026 Mercredi LP MIA S5 - Mathématiques générales - TD2 ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">30/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:00 - 12:00</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD2</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="30/09/2026 Mercredi LP MIA S5 - Anglais - TD1 AMADEI SALLE TD-VINCI">
+            <td class="p-3 font-semibold">30/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:00 - 12:00</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - TD1</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="30/09/2026 Mercredi LP MIA S5 - Anglais - TD2 AMADEI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">30/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - TD2</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="30/09/2026 Mercredi LP MIA S5 - Anglais - TD1 AMADEI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">30/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Anglais - TD1</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 09:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 14:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">14:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi BUT 3 SNRV R5.05 Construction Hydrau - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 16:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-emerald-50 text-emerald-900 font-medium transition-colors" data-search-text="01/10/2026 Jeudi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">01/10/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="05/10/2026 Lundi BUT 3 SNRV R5.04 Math - Cours ATTAFI SALLE TD-VINCI">
+            <td class="p-3 font-semibold">05/10/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - Cours</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="05/10/2026 Lundi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-VINCI">
+            <td class="p-3 font-semibold">05/10/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="05/10/2026 Lundi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-VINCI">
+            <td class="p-3 font-semibold">05/10/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="05/10/2026 Lundi LP MIA S5 - Mathématiques générales - CM ATTAFI Amphi Polyaéro">
+            <td class="p-3 font-semibold">05/10/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - CM</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="06/10/2026 Mardi BUT 3 SNRV R5.05 Construction Hydrau - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">06/10/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="07/10/2026 Mercredi BUT 3 SNRV R5.08 OPI TP serious game SANCHEZ SALLE TD-VINCI">
+            <td class="p-3 font-semibold">07/10/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.08 OPI TP serious game</td>
+            <td class="p-3">SANCHEZ</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="07/10/2026 Mercredi BUT 3 SNRV R5.08 OPI TP serious game SANCHEZ SALLE TD-VINCI">
+            <td class="p-3 font-semibold">07/10/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.08 OPI TP serious game</td>
+            <td class="p-3">SANCHEZ</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="07/10/2026 Mercredi BUT 3 SNRV R5.08 OPI - Cours SANCHEZ SALLE TD-VINCI">
+            <td class="p-3 font-semibold">07/10/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 16:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.08 OPI - Cours</td>
+            <td class="p-3">SANCHEZ</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="07/10/2026 Mercredi BUT 3 SNRV R5.08 OPI - Cours SANCHEZ SALLE TD-VINCI">
+            <td class="p-3 font-semibold">07/10/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">16:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.08 OPI - Cours</td>
+            <td class="p-3">SANCHEZ</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/10/2026 Vendredi BUT 3 SNRV R5.05 Construction Hydrau - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">09/10/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/10/2026 Vendredi M2 MPAD ECUE 2.32 - Mat. Fab Add VAL CM VALLEE SALLE TD-PITOT">
+            <td class="p-3 font-semibold">09/10/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add VAL CM</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/10/2026 Vendredi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">09/10/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/10/2026 Vendredi M2 MPAD ECUE 2.32 - Mat. Fab Add VAL CM VALLEE SALLE TD-PITOT">
+            <td class="p-3 font-semibold">09/10/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add VAL CM</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="12/10/2026 Lundi LP MIA S5 - Mathématiques générales - TD1 ATTAFI salle TD-BREGUET">
+            <td class="p-3 font-semibold">12/10/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">08:00 - 10:00</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD1</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">salle TD-BREGUET</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="12/10/2026 Lundi M2 MPAD ECUE 2.32 - Mat. Fab Add  MOY TD MOYSAN SALLE TD-PITOT">
+            <td class="p-3 font-semibold">12/10/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add  MOY TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/10/2026 Mardi M2 MPAD ECUE 2.32 - Mat. Fab Add MOY CM MOYSAN SALLE TD-PITOT">
+            <td class="p-3 font-semibold">13/10/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add MOY CM</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/10/2026 Mardi BUT 3 SNRV R5.05 Construction Hydrau - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">13/10/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/10/2026 Mardi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">13/10/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 14:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/10/2026 Mardi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">13/10/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">14:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/10/2026 Mardi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">13/10/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="17/11/2026 Mardi LP MIA S5 - Mathématiques générales - CM ATTAFI Amphi Polyaéro">
+            <td class="p-3 font-semibold">17/11/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - CM</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="25/11/2026 Mercredi BUT 3 SNRV R5.03 SDM - Cours _ SNRV MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">25/11/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 09:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - Cours _ SNRV</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="25/11/2026 Mercredi BUT 3 SNRV R5.03 SDM - Cours _ SNRV MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">25/11/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - Cours _ SNRV</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="25/11/2026 Mercredi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">25/11/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="25/11/2026 Mercredi BUT 3 SNRV R5.05 Construction Hydrau - TP MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">25/11/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - TP</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="26/11/2026 Jeudi BUT 3 SNRV R5.07 Métrologie - Cours RAYNAL SALLE TD-VINCI">
+            <td class="p-3 font-semibold">26/11/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.07 Métrologie - Cours</td>
+            <td class="p-3">RAYNAL</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="26/11/2026 Jeudi BUT 3 SNRV R5.07 Métrologie - TD RAYNAL SALLE TD-VINCI">
+            <td class="p-3 font-semibold">26/11/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.07 Métrologie - TD</td>
+            <td class="p-3">RAYNAL</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="26/11/2026 Jeudi BUT 3 SNRV R5.07 Métrologie - TD RAYNAL SALLE TD-VINCI">
+            <td class="p-3 font-semibold">26/11/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.07 Métrologie - TD</td>
+            <td class="p-3">RAYNAL</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/11/2026 Vendredi BUT 3 SNRV R5.04 Math - Cours ATTAFI SALLE TD-ADER">
+            <td class="p-3 font-semibold">27/11/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - Cours</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/11/2026 Vendredi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-ADER">
+            <td class="p-3 font-semibold">27/11/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/11/2026 Vendredi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-ADER">
+            <td class="p-3 font-semibold">27/11/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/11/2026 Vendredi LP MIA Soutien Maths ATTAFI ">
+            <td class="p-3 font-semibold">27/11/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">Soutien Maths</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/12/2026 Mardi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/12/2026 Mardi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/12/2026 Mardi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 14:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/12/2026 Mardi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">14:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/12/2026 Mardi BUT 3 SNRV Portfolio MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Portfolio</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="02/12/2026 Mercredi BUT 3 SNRV R5.03 SDM - TD VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">02/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - TD</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="02/12/2026 Mercredi BUT 3 SNRV R5.03 SDM - TD VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">02/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - TD</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi BUT 3 SNRV R5.11 Anglais - TPA1 MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TPA1</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 09:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi BUT 3 SNRV R5.11 Anglais - TPA1 MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TPA1</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais TD AMADEI ">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M2 MPAD ECUE 4.32 - Anglais TD AMADEI ">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 14:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">14:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="03/12/2026 Jeudi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">03/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="04/12/2026 Vendredi LP MIA S5 - Mathématiques générales - TD1 ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">04/12/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">14:15 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD1</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="04/12/2026 Vendredi LP MIA S5 - Mathématiques générales - TD2 ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">04/12/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:15</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD2</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="08/12/2026 Mardi BUT 3 SNRV R5.05 Construction Hydrau - Test MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">08/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 09:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction Hydrau - Test</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="08/12/2026 Mardi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">08/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="08/12/2026 Mardi BUT 3 SNRV R5.02 DDS - Cours MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">08/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Cours</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="08/12/2026 Mardi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">08/12/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi M2 MPAD ECUE 4.32 - Anglais TD AMADEI ">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">07:00 - 08:00</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi BUT 3 SNRV R5.03 SDM - TD VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - TD</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi BUT 3 SNRV R5.03 SDM - TD VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - TD</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi M2 MPAD ECUE 4.32 - Anglais CM AMADEI ">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi M2 MPAD ECUE 4.32 - Anglais TD AMADEI ">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi M2 MPAD ECUE 2.32 - Mat. Fab Add VAL TD VALLEE SALLE TD-PITOT">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add VAL TD</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/12/2026 Mercredi M2 MPAD ECUE 2.32 - Mat. Fab Add VAL TD VALLEE SALLE TD-PITOT">
+            <td class="p-3 font-semibold">09/12/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 2.32 - Mat. Fab Add VAL TD</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="10/12/2026 Jeudi BUT 3 SNRV R5.11 Anglais - TPA1 MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">10/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TPA1</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="10/12/2026 Jeudi BUT 3 SNRV R5.11 Anglais - TD MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">10/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TD</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="11/12/2026 Vendredi BUT 3 SNRV R5.07 Métrologie - TP RAYNAL SALLE INFO-ST EXUPERY">
+            <td class="p-3 font-semibold">11/12/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.07 Métrologie - TP</td>
+            <td class="p-3">RAYNAL</td>
+            <td class="p-3">SALLE INFO-ST EXUPERY</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="11/12/2026 Vendredi BUT 3 SNRV R5.07 Métrologie - TP RAYNAL SALLE INFO-ST EXUPERY">
+            <td class="p-3 font-semibold">11/12/2026</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.07 Métrologie - TP</td>
+            <td class="p-3">RAYNAL</td>
+            <td class="p-3">SALLE INFO-ST EXUPERY</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="14/12/2026 Lundi M1 MPAD ECUE 3,11 - OPI 4.0 CM SANCHEZ SALLE TD-ADER">
+            <td class="p-3 font-semibold">14/12/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">14:15 - 15:15</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 3,11 - OPI 4.0 CM</td>
+            <td class="p-3">SANCHEZ</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="17/12/2026 Jeudi LP MIA S5 - Mathématiques générales - TD1 ATTAFI salle TD-BREGUET">
+            <td class="p-3 font-semibold">17/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD1</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">salle TD-BREGUET</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="17/12/2026 Jeudi LP MIA S5 - Mathématiques générales - TD2 ATTAFI salle TD-BREGUET">
+            <td class="p-3 font-semibold">17/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD2</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">salle TD-BREGUET</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="17/12/2026 Jeudi LP MIA S5 - Mathématiques générales - TD1 ATTAFI salle TD-BREGUET">
+            <td class="p-3 font-semibold">17/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD1</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">salle TD-BREGUET</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="17/12/2026 Jeudi LP MIA S5 - Mathématiques générales - TD2 ATTAFI salle TD-BREGUET">
+            <td class="p-3 font-semibold">17/12/2026</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD2</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">salle TD-BREGUET</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="11/01/2027 Lundi BUT 3 SNRV R5.04 Math - Cours ATTAFI SALLE TD-PITOT">
+            <td class="p-3 font-semibold">11/01/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - Cours</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="11/01/2027 Lundi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-PITOT">
+            <td class="p-3 font-semibold">11/01/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="11/01/2027 Lundi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-PITOT">
+            <td class="p-3 font-semibold">11/01/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-PITOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="12/01/2027 Mardi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">12/01/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="12/01/2027 Mardi BUT 3 SNRV R5.02 DDS - TD MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">12/01/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - TD</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="12/01/2027 Mardi BUT 3 SNRV R5.02 DDS - Test MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">12/01/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.02 DDS - Test</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/01/2027 Mercredi BUT 3 SNRV R5.03 SDM - TP VALLEE SALLE TD-CARNOT">
+            <td class="p-3 font-semibold">13/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - TP</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-CARNOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="13/01/2027 Mercredi BUT 3 SNRV R5.03 SDM - TP VALLEE SALLE TD-CARNOT">
+            <td class="p-3 font-semibold">13/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - TP</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-CARNOT</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="14/01/2027 Jeudi BUT 3 SNRV C R5.A.13.2 SNRV Sim Physique MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">14/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">C R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="14/01/2027 Jeudi BUT 3 SNRV TD R5.A.13.2 SNRV Sim Physique MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">14/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">TD R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="14/01/2027 Jeudi BUT 3 SNRV Portfolio MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">14/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Portfolio</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="14/01/2027 Jeudi BUT 3 SNRV Portfolio MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">14/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Portfolio</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="20/01/2027 Mercredi BUT 3 SNRV TD R5.A.13.2 SNRV Sim Physique VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">20/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">TD R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="20/01/2027 Mercredi BUT 3 SNRV TD R5.A.13.2 SNRV Sim Physique VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">20/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">TD R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="20/01/2027 Mercredi BUT 3 SNRV R5.03 SDM - Test VALLEE SALLE TD-VINCI">
+            <td class="p-3 font-semibold">20/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.03 SDM - Test</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="21/01/2027 Jeudi BUT 3 SNRV R5.11 Anglais - TD MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">21/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TD</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="21/01/2027 Jeudi BUT 3 SNRV R5.11 Anglais - TD MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">21/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TD</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="21/01/2027 Jeudi BUT 3 SNRV R5.11 Anglais - TD MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">21/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TD</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="26/01/2027 Mardi BUT 3 SNRV TP R5.A.13.2 SNRV Sim Physique VALLEE salle INFO-BLAISE PASCAL">
+            <td class="p-3 font-semibold">26/01/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">TP R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">salle INFO-BLAISE PASCAL</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="26/01/2027 Mardi BUT 3 SNRV TP R5.A.13.2 SNRV Sim Physique VALLEE salle INFO-BLAISE PASCAL">
+            <td class="p-3 font-semibold">26/01/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">TP R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">VALLEE</td>
+            <td class="p-3">salle INFO-BLAISE PASCAL</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi BUT 3 SNRV R5.05 Construction TPM - Test MOYSAN SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 09:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.05 Construction TPM - Test</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi BUT 3 SNRV R5.04 Math - Cours ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - Cours</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:00 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi M1 MPAD ECUE 4,13 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi M1 MPAD ECUE 4,13 - Anglais EXAM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,13 - Anglais EXAM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="27/01/2027 Mercredi BUT 3 SNRV R5.04 Math - TD ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">27/01/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - TD</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="28/01/2027 Jeudi BUT 3 SNRV TP R5.A.13.2 SNRV Sim Physique MOYSAN salle INFO-BLAISE PASCAL">
+            <td class="p-3 font-semibold">28/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">TP R5.A.13.2 SNRV Sim Physique</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">salle INFO-BLAISE PASCAL</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="28/01/2027 Jeudi BUT 3 SNRV Portfolio MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">28/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Portfolio</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="28/01/2027 Jeudi BUT 3 SNRV Portfolio MOYSAN SALLE TD-VINCI">
+            <td class="p-3 font-semibold">28/01/2027</td>
+            <td class="p-3">Jeudi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Portfolio</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="29/01/2027 Vendredi BUT 3 SNRV R5.11 Anglais - TD MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">29/01/2027</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - TD</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="29/01/2027 Vendredi BUT 3 SNRV Préparation au TOEIC MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">29/01/2027</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Préparation au TOEIC</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="29/01/2027 Vendredi BUT 3 SNRV Préparation au TOEIC MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">29/01/2027</td>
+            <td class="p-3">Vendredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Préparation au TOEIC</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/02/2027 Lundi BUT 3 SNRV R5.04 Math - Test ATTAFI SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/02/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.04 Math - Test</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/02/2027 Lundi BUT 3 SNRV Préparation au TOEIC MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/02/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Préparation au TOEIC</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/02/2027 Lundi BUT 3 SNRV R5.11 Anglais - Test MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">01/02/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">R5.11 Anglais - Test</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="02/02/2027 Mardi M2 MPAD ECUE 4.32 - Anglais TD AMADEI ">
+            <td class="p-3 font-semibold">02/02/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 14:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="02/02/2027 Mardi M2 MPAD ECUE 4.32 - Anglais TD AMADEI ">
+            <td class="p-3 font-semibold">02/02/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">14:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="02/02/2027 Mardi M2 MPAD ECUE 4.32 - Anglais EXAM AMADEI ">
+            <td class="p-3 font-semibold">02/02/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 16:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4.32 - Anglais EXAM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/02/2027 Mardi M1 MPAD ECUE 4,23 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">09/02/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="09/02/2027 Mardi M1 MPAD ECUE 4,23 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">09/02/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="15/03/2027 Lundi BUT 3 SNRV Préparation au TOEIC MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">15/03/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Préparation au TOEIC</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="15/03/2027 Lundi BUT 3 SNRV Préparation au TOEIC MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">15/03/2027</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Préparation au TOEIC</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="17/03/2027 Mercredi BUT 3 SNRV Test Toiec MAZOYER SALLE TD-VINCI">
+            <td class="p-3 font-semibold">17/03/2027</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">09:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">BUT 3 SNRV</span></td>
+            <td class="p-3 font-medium">Test Toiec</td>
+            <td class="p-3">MAZOYER</td>
+            <td class="p-3">SALLE TD-VINCI</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="06/04/2027 Mardi M1 MPAD ECUE 4,23 - Anglais TD AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">06/04/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="06/04/2027 Mardi M1 MPAD ECUE 4,23 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">06/04/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="06/04/2027 Mardi M1 MPAD ECUE 4,23 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">06/04/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/06/2027 Mardi M1 MPAD ECUE 4,23 - Anglais TD AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">01/06/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/06/2027 Mardi M1 MPAD ECUE 4,23 - Anglais CM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">01/06/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais CM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="01/06/2027 Mardi M1 MPAD ECUE 4,23 - Anglais TD AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">01/06/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="15/06/2027 Mardi M1 MPAD ECUE 4,23 - Anglais TD AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">15/06/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 11:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais TD</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-white text-slate-800 hover:bg-slate-50 transition-colors" data-search-text="15/06/2027 Mardi M1 MPAD ECUE 4,23 - Anglais EXAM AMADEI SALLE TD-ADER">
+            <td class="p-3 font-semibold">15/06/2027</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">11:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M1 MPAD</span></td>
+            <td class="p-3 font-medium">ECUE 4,23 - Anglais EXAM</td>
+            <td class="p-3">AMADEI</td>
+            <td class="p-3">SALLE TD-ADER</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="08/09/2026 Mardi M2 MPAD Soutenances finales et conseil de perf M2 P1 CORNUEAU ">
+            <td class="p-3 font-semibold">08/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">M2 MPAD</span></td>
+            <td class="p-3 font-medium">Soutenances finales et conseil de perf M2 P1</td>
+            <td class="p-3">CORNUEAU</td>
+            <td class="p-3"></td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="21/09/2026 Lundi LP MIA S6 - Management de projet entreprise - CM MOYSAN Amphi Polyaéro">
+            <td class="p-3 font-semibold">21/09/2026</td>
+            <td class="p-3">Lundi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 17:15</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S6 - Management de projet entreprise - CM</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="22/09/2026 Mardi LP MIA S6 - CND - Moysan - CM MOYSAN Amphi Polyaéro">
+            <td class="p-3 font-semibold">22/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S6 - CND - Moysan - CM</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="22/09/2026 Mardi LP MIA S6 - CND - Moysan - TD1 MOYSAN SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">22/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S6 - CND - Moysan - TD1</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="22/09/2026 Mardi LP MIA S6 - CND - Moysan - TD2 MOYSAN SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">22/09/2026</td>
+            <td class="p-3">Mardi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S6 - CND - Moysan - TD2</td>
+            <td class="p-3">MOYSAN</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="23/09/2026 Mercredi LP MIA S5 - Mathématiques générales - CM ATTAFI Amphi Polyaéro">
+            <td class="p-3 font-semibold">23/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">08:30 - 10:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - CM</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="23/09/2026 Mercredi LP MIA S5 - Mathématiques générales - CM ATTAFI Amphi Polyaéro">
+            <td class="p-3 font-semibold">23/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">10:30 - 12:30</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - CM</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">Amphi Polyaéro</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="23/09/2026 Mercredi LP MIA S5 - Mathématiques générales - TD1 ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">23/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">13:45 - 15:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD1</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        
+        <tr class="bg-red-50 text-red-700 opacity-75 transition-colors" data-search-text="23/09/2026 Mercredi LP MIA S5 - Mathématiques générales - TD2 ATTAFI SALLE TD-BLOCH">
+            <td class="p-3 font-semibold">23/09/2026</td>
+            <td class="p-3">Mercredi</td>
+            <td class="p-3 whitespace-nowrap">15:45 - 17:45</td>
+            <td class="p-3"><span class="px-2 py-1 rounded bg-slate-200 text-slate-800 text-xs font-bold">LP MIA</span></td>
+            <td class="p-3 font-medium">S5 - Mathématiques générales - TD2</td>
+            <td class="p-3">ATTAFI</td>
+            <td class="p-3">SALLE TD-BLOCH</td>
+        </tr>
+        </tbody></table></div>
+        </div>
+
+    </main>
+
+    <!-- JS FRONTEND -->
+    <script>
+        const COURS_DATA = [{"id": "202609281345_M2 MPAD_MOYSAN", "date": "2026-09-28", "date_fr": "28/09/2026", "jour": "Lundi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add MOY CM", "enseignant": "MOYSAN", "salle": "SALLE TD-PITOT", "start_minutes": 825, "end_minutes": 945}, {"id": "202609290930_BUT 3 SNRV_MOYSAN", "date": "2026-09-29", "date_fr": "29/09/2026", "jour": "Mardi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 570, "end_minutes": 630}, {"id": "202609291030_LP MIA_AMADEI", "date": "2026-09-29", "date_fr": "29/09/2026", "jour": "Mardi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "LP MIA", "cours": "S5 - Anglais - CM", "enseignant": "AMADEI", "salle": "Amphi Polyaéro", "start_minutes": 630, "end_minutes": 750}, {"id": "202609291345_LP MIA_AMADEI", "date": "2026-09-29", "date_fr": "29/09/2026", "jour": "Mardi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "LP MIA", "cours": "S5 - Anglais - TD1", "enseignant": "AMADEI", "salle": "SALLE TD-BLOCH", "start_minutes": 825, "end_minutes": 945}, {"id": "202609291545_LP MIA_AMADEI", "date": "2026-09-29", "date_fr": "29/09/2026", "jour": "Mardi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "S5 - Anglais - TD2", "enseignant": "AMADEI", "salle": "SALLE TD-BLOCH", "start_minutes": 945, "end_minutes": 1065}, {"id": "202609300800_LP MIA_ATTAFI", "date": "2026-09-30", "date_fr": "30/09/2026", "jour": "Mercredi", "start_time": "08:00", "end_time": "10:00", "horaires": "08:00 - 10:00", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD1", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 480, "end_minutes": 600}, {"id": "202609300800_LP MIA_AMADEI", "date": "2026-09-30", "date_fr": "30/09/2026", "jour": "Mercredi", "start_time": "08:00", "end_time": "10:00", "horaires": "08:00 - 10:00", "cohorte": "LP MIA", "cours": "S5 - Anglais - TD2", "enseignant": "AMADEI", "salle": "SALLE TD-VINCI", "start_minutes": 480, "end_minutes": 600}, {"id": "202609301000_LP MIA_ATTAFI", "date": "2026-09-30", "date_fr": "30/09/2026", "jour": "Mercredi", "start_time": "10:00", "end_time": "12:00", "horaires": "10:00 - 12:00", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD2", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 600, "end_minutes": 720}, {"id": "202609301000_LP MIA_AMADEI", "date": "2026-09-30", "date_fr": "30/09/2026", "jour": "Mercredi", "start_time": "10:00", "end_time": "12:00", "horaires": "10:00 - 12:00", "cohorte": "LP MIA", "cours": "S5 - Anglais - TD1", "enseignant": "AMADEI", "salle": "SALLE TD-VINCI", "start_minutes": 600, "end_minutes": 720}, {"id": "202609301345_LP MIA_AMADEI", "date": "2026-09-30", "date_fr": "30/09/2026", "jour": "Mercredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "LP MIA", "cours": "S5 - Anglais - TD2", "enseignant": "AMADEI", "salle": "SALLE TD-BLOCH", "start_minutes": 825, "end_minutes": 945}, {"id": "202609301545_LP MIA_AMADEI", "date": "2026-09-30", "date_fr": "30/09/2026", "jour": "Mercredi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "S5 - Anglais - TD1", "enseignant": "AMADEI", "salle": "SALLE TD-BLOCH", "start_minutes": 945, "end_minutes": 1065}, {"id": "202610010830_M2 MPAD_AMADEI", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "08:30", "end_time": "09:30", "horaires": "08:30 - 09:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 510, "end_minutes": 570}, {"id": "202610010930_M2 MPAD_AMADEI", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 570, "end_minutes": 630}, {"id": "202610011030_M2 MPAD_AMADEI", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 630, "end_minutes": 690}, {"id": "202610011130_M2 MPAD_AMADEI", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 690, "end_minutes": 750}, {"id": "202610011345_BUT 3 SNRV_MOYSAN", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "13:45", "end_time": "14:45", "horaires": "13:45 - 14:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 885}, {"id": "202610011345_M1 MPAD_AMADEI", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 825, "end_minutes": 945}, {"id": "202610011445_BUT 3 SNRV_MOYSAN", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "14:45", "end_time": "15:45", "horaires": "14:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 885, "end_minutes": 945}, {"id": "202610011545_BUT 3 SNRV_MOYSAN", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "15:45", "end_time": "16:45", "horaires": "15:45 - 16:45", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1005}, {"id": "202610011545_M1 MPAD_AMADEI", "date": "2026-10-01", "date_fr": "01/10/2026", "jour": "Jeudi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 945, "end_minutes": 1065}, {"id": "202610050930_BUT 3 SNRV_ATTAFI", "date": "2026-10-05", "date_fr": "05/10/2026", "jour": "Lundi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - Cours", "enseignant": "ATTAFI", "salle": "SALLE TD-VINCI", "start_minutes": 570, "end_minutes": 630}, {"id": "202610051030_BUT 3 SNRV_ATTAFI", "date": "2026-10-05", "date_fr": "05/10/2026", "jour": "Lundi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202610051345_BUT 3 SNRV_ATTAFI", "date": "2026-10-05", "date_fr": "05/10/2026", "jour": "Lundi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202610051545_LP MIA_ATTAFI", "date": "2026-10-05", "date_fr": "05/10/2026", "jour": "Lundi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - CM", "enseignant": "ATTAFI", "salle": "Amphi Polyaéro", "start_minutes": 945, "end_minutes": 1065}, {"id": "202610061545_BUT 3 SNRV_MOYSAN", "date": "2026-10-06", "date_fr": "06/10/2026", "jour": "Mardi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1065}, {"id": "202610070830_BUT 3 SNRV_SANCHEZ", "date": "2026-10-07", "date_fr": "07/10/2026", "jour": "Mercredi", "start_time": "08:30", "end_time": "12:30", "horaires": "08:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.08 OPI TP serious game", "enseignant": "SANCHEZ", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 750}, {"id": "202610071345_BUT 3 SNRV_SANCHEZ", "date": "2026-10-07", "date_fr": "07/10/2026", "jour": "Mercredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.08 OPI TP serious game", "enseignant": "SANCHEZ", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202610071545_BUT 3 SNRV_SANCHEZ", "date": "2026-10-07", "date_fr": "07/10/2026", "jour": "Mercredi", "start_time": "15:45", "end_time": "16:45", "horaires": "15:45 - 16:45", "cohorte": "BUT 3 SNRV", "cours": "R5.08 OPI - Cours", "enseignant": "SANCHEZ", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1005}, {"id": "202610071645_BUT 3 SNRV_SANCHEZ", "date": "2026-10-07", "date_fr": "07/10/2026", "jour": "Mercredi", "start_time": "16:45", "end_time": "17:45", "horaires": "16:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "R5.08 OPI - Cours", "enseignant": "SANCHEZ", "salle": "SALLE TD-VINCI", "start_minutes": 1005, "end_minutes": 1065}, {"id": "202610090830_BUT 3 SNRV_MOYSAN", "date": "2026-10-09", "date_fr": "09/10/2026", "jour": "Vendredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202610090830_M2 MPAD_VALLEE", "date": "2026-10-09", "date_fr": "09/10/2026", "jour": "Vendredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add VAL CM", "enseignant": "VALLEE", "salle": "SALLE TD-PITOT", "start_minutes": 510, "end_minutes": 630}, {"id": "202610091030_BUT 3 SNRV_MOYSAN", "date": "2026-10-09", "date_fr": "09/10/2026", "jour": "Vendredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202610091030_M2 MPAD_VALLEE", "date": "2026-10-09", "date_fr": "09/10/2026", "jour": "Vendredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add VAL CM", "enseignant": "VALLEE", "salle": "SALLE TD-PITOT", "start_minutes": 630, "end_minutes": 750}, {"id": "202610120800_LP MIA_ATTAFI", "date": "2026-10-12", "date_fr": "12/10/2026", "jour": "Lundi", "start_time": "08:00", "end_time": "10:00", "horaires": "08:00 - 10:00", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD1", "enseignant": "ATTAFI", "salle": "salle TD-BREGUET", "start_minutes": 480, "end_minutes": 600}, {"id": "202610121345_M2 MPAD_MOYSAN", "date": "2026-10-12", "date_fr": "12/10/2026", "jour": "Lundi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add  MOY TD", "enseignant": "MOYSAN", "salle": "SALLE TD-PITOT", "start_minutes": 825, "end_minutes": 945}, {"id": "202610130830_M2 MPAD_MOYSAN", "date": "2026-10-13", "date_fr": "13/10/2026", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add MOY CM", "enseignant": "MOYSAN", "salle": "SALLE TD-PITOT", "start_minutes": 510, "end_minutes": 630}, {"id": "202610131030_BUT 3 SNRV_MOYSAN", "date": "2026-10-13", "date_fr": "13/10/2026", "jour": "Mardi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202610131345_BUT 3 SNRV_MOYSAN", "date": "2026-10-13", "date_fr": "13/10/2026", "jour": "Mardi", "start_time": "13:45", "end_time": "14:45", "horaires": "13:45 - 14:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 885}, {"id": "202610131445_BUT 3 SNRV_MOYSAN", "date": "2026-10-13", "date_fr": "13/10/2026", "jour": "Mardi", "start_time": "14:45", "end_time": "15:45", "horaires": "14:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 885, "end_minutes": 945}, {"id": "202610131545_BUT 3 SNRV_MOYSAN", "date": "2026-10-13", "date_fr": "13/10/2026", "jour": "Mardi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1065}, {"id": "202611170830_LP MIA_ATTAFI", "date": "2026-11-17", "date_fr": "17/11/2026", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - CM", "enseignant": "ATTAFI", "salle": "Amphi Polyaéro", "start_minutes": 510, "end_minutes": 630}, {"id": "202611250830_BUT 3 SNRV_MOYSAN", "date": "2026-11-25", "date_fr": "25/11/2026", "jour": "Mercredi", "start_time": "08:30", "end_time": "09:30", "horaires": "08:30 - 09:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - Cours _ SNRV", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 570}, {"id": "202611250930_BUT 3 SNRV_MOYSAN", "date": "2026-11-25", "date_fr": "25/11/2026", "jour": "Mercredi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - Cours _ SNRV", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 570, "end_minutes": 630}, {"id": "202611251030_BUT 3 SNRV_MOYSAN", "date": "2026-11-25", "date_fr": "25/11/2026", "jour": "Mercredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202611251345_BUT 3 SNRV_MOYSAN", "date": "2026-11-25", "date_fr": "25/11/2026", "jour": "Mercredi", "start_time": "13:45", "end_time": "17:45", "horaires": "13:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - TP", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 1065}, {"id": "202611261030_BUT 3 SNRV_RAYNAL", "date": "2026-11-26", "date_fr": "26/11/2026", "jour": "Jeudi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.07 Métrologie - Cours", "enseignant": "RAYNAL", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202611261345_BUT 3 SNRV_RAYNAL", "date": "2026-11-26", "date_fr": "26/11/2026", "jour": "Jeudi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.07 Métrologie - TD", "enseignant": "RAYNAL", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202611261545_BUT 3 SNRV_RAYNAL", "date": "2026-11-26", "date_fr": "26/11/2026", "jour": "Jeudi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "R5.07 Métrologie - TD", "enseignant": "RAYNAL", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1065}, {"id": "202611270930_BUT 3 SNRV_ATTAFI", "date": "2026-11-27", "date_fr": "27/11/2026", "jour": "Vendredi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - Cours", "enseignant": "ATTAFI", "salle": "SALLE TD-ADER", "start_minutes": 570, "end_minutes": 630}, {"id": "202611271030_BUT 3 SNRV_ATTAFI", "date": "2026-11-27", "date_fr": "27/11/2026", "jour": "Vendredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-ADER", "start_minutes": 630, "end_minutes": 750}, {"id": "202611271345_BUT 3 SNRV_ATTAFI", "date": "2026-11-27", "date_fr": "27/11/2026", "jour": "Vendredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-ADER", "start_minutes": 825, "end_minutes": 945}, {"id": "202611271545_LP MIA_ATTAFI", "date": "2026-11-27", "date_fr": "27/11/2026", "jour": "Vendredi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "Soutien Maths", "enseignant": "ATTAFI", "salle": "", "start_minutes": 945, "end_minutes": 1065}, {"id": "202612010930_BUT 3 SNRV_MOYSAN", "date": "2026-12-01", "date_fr": "01/12/2026", "jour": "Mardi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 570, "end_minutes": 630}, {"id": "202612011030_BUT 3 SNRV_MOYSAN", "date": "2026-12-01", "date_fr": "01/12/2026", "jour": "Mardi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202612011345_BUT 3 SNRV_MOYSAN", "date": "2026-12-01", "date_fr": "01/12/2026", "jour": "Mardi", "start_time": "13:45", "end_time": "14:45", "horaires": "13:45 - 14:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 885}, {"id": "202612011445_BUT 3 SNRV_MOYSAN", "date": "2026-12-01", "date_fr": "01/12/2026", "jour": "Mardi", "start_time": "14:45", "end_time": "15:45", "horaires": "14:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 885, "end_minutes": 945}, {"id": "202612011545_BUT 3 SNRV_MOYSAN", "date": "2026-12-01", "date_fr": "01/12/2026", "jour": "Mardi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "Portfolio", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1065}, {"id": "202612020830_BUT 3 SNRV_VALLEE", "date": "2026-12-02", "date_fr": "02/12/2026", "jour": "Mercredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - TD", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202612021030_BUT 3 SNRV_VALLEE", "date": "2026-12-02", "date_fr": "02/12/2026", "jour": "Mercredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - TD", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202612030830_BUT 3 SNRV_MAZOYER", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TPA1", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202612030830_M2 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "08:30", "end_time": "09:30", "horaires": "08:30 - 09:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 510, "end_minutes": 570}, {"id": "202612030930_M2 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 570, "end_minutes": 630}, {"id": "202612031030_BUT 3 SNRV_MAZOYER", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TPA1", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202612031030_M2 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais TD", "enseignant": "AMADEI", "salle": "", "start_minutes": 630, "end_minutes": 690}, {"id": "202612031130_M2 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais TD", "enseignant": "AMADEI", "salle": "", "start_minutes": 690, "end_minutes": 750}, {"id": "202612031345_M1 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "13:45", "end_time": "14:45", "horaires": "13:45 - 14:45", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 825, "end_minutes": 885}, {"id": "202612031445_M1 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "14:45", "end_time": "15:45", "horaires": "14:45 - 15:45", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 885, "end_minutes": 945}, {"id": "202612031545_M1 MPAD_AMADEI", "date": "2026-12-03", "date_fr": "03/12/2026", "jour": "Jeudi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 945, "end_minutes": 1065}, {"id": "202612041415_LP MIA_ATTAFI", "date": "2026-12-04", "date_fr": "04/12/2026", "jour": "Vendredi", "start_time": "14:15", "end_time": "15:45", "horaires": "14:15 - 15:45", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD1", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 855, "end_minutes": 945}, {"id": "202612041545_LP MIA_ATTAFI", "date": "2026-12-04", "date_fr": "04/12/2026", "jour": "Vendredi", "start_time": "15:45", "end_time": "17:15", "horaires": "15:45 - 17:15", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD2", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 945, "end_minutes": 1035}, {"id": "202612080830_BUT 3 SNRV_MOYSAN", "date": "2026-12-08", "date_fr": "08/12/2026", "jour": "Mardi", "start_time": "08:30", "end_time": "09:30", "horaires": "08:30 - 09:30", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction Hydrau - Test", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 570}, {"id": "202612080930_BUT 3 SNRV_MOYSAN", "date": "2026-12-08", "date_fr": "08/12/2026", "jour": "Mardi", "start_time": "09:30", "end_time": "11:30", "horaires": "09:30 - 11:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 570, "end_minutes": 690}, {"id": "202612081130_BUT 3 SNRV_MOYSAN", "date": "2026-12-08", "date_fr": "08/12/2026", "jour": "Mardi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Cours", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 690, "end_minutes": 750}, {"id": "202612081345_BUT 3 SNRV_MOYSAN", "date": "2026-12-08", "date_fr": "08/12/2026", "jour": "Mardi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202612090700_M2 MPAD_AMADEI", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "07:00", "end_time": "08:00", "horaires": "07:00 - 08:00", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais TD", "enseignant": "AMADEI", "salle": "", "start_minutes": 420, "end_minutes": 480}, {"id": "202612090830_BUT 3 SNRV_VALLEE", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - TD", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202612091030_BUT 3 SNRV_VALLEE", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - TD", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202612091030_M2 MPAD_AMADEI", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais CM", "enseignant": "AMADEI", "salle": "", "start_minutes": 630, "end_minutes": 690}, {"id": "202612091130_M2 MPAD_AMADEI", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais TD", "enseignant": "AMADEI", "salle": "", "start_minutes": 690, "end_minutes": 750}, {"id": "202612091345_M2 MPAD_VALLEE", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add VAL TD", "enseignant": "VALLEE", "salle": "SALLE TD-PITOT", "start_minutes": 825, "end_minutes": 945}, {"id": "202612091545_M2 MPAD_VALLEE", "date": "2026-12-09", "date_fr": "09/12/2026", "jour": "Mercredi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "M2 MPAD", "cours": "ECUE 2.32 - Mat. Fab Add VAL TD", "enseignant": "VALLEE", "salle": "SALLE TD-PITOT", "start_minutes": 945, "end_minutes": 1065}, {"id": "202612100830_BUT 3 SNRV_MAZOYER", "date": "2026-12-10", "date_fr": "10/12/2026", "jour": "Jeudi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TPA1", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202612101030_BUT 3 SNRV_MAZOYER", "date": "2026-12-10", "date_fr": "10/12/2026", "jour": "Jeudi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TD", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202612110830_BUT 3 SNRV_RAYNAL", "date": "2026-12-11", "date_fr": "11/12/2026", "jour": "Vendredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.07 Métrologie - TP", "enseignant": "RAYNAL", "salle": "SALLE INFO-ST EXUPERY", "start_minutes": 510, "end_minutes": 630}, {"id": "202612111030_BUT 3 SNRV_RAYNAL", "date": "2026-12-11", "date_fr": "11/12/2026", "jour": "Vendredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.07 Métrologie - TP", "enseignant": "RAYNAL", "salle": "SALLE INFO-ST EXUPERY", "start_minutes": 630, "end_minutes": 750}, {"id": "202612141415_M1 MPAD_SANCHEZ", "date": "2026-12-14", "date_fr": "14/12/2026", "jour": "Lundi", "start_time": "14:15", "end_time": "15:15", "horaires": "14:15 - 15:15", "cohorte": "M1 MPAD", "cours": "ECUE 3,11 - OPI 4.0 CM", "enseignant": "SANCHEZ", "salle": "SALLE TD-ADER", "start_minutes": 855, "end_minutes": 915}, {"id": "202612170830_LP MIA_ATTAFI", "date": "2026-12-17", "date_fr": "17/12/2026", "jour": "Jeudi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD1", "enseignant": "ATTAFI", "salle": "salle TD-BREGUET", "start_minutes": 510, "end_minutes": 630}, {"id": "202612171030_LP MIA_ATTAFI", "date": "2026-12-17", "date_fr": "17/12/2026", "jour": "Jeudi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD2", "enseignant": "ATTAFI", "salle": "salle TD-BREGUET", "start_minutes": 630, "end_minutes": 750}, {"id": "202612171345_LP MIA_ATTAFI", "date": "2026-12-17", "date_fr": "17/12/2026", "jour": "Jeudi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD1", "enseignant": "ATTAFI", "salle": "salle TD-BREGUET", "start_minutes": 825, "end_minutes": 945}, {"id": "202612171545_LP MIA_ATTAFI", "date": "2026-12-17", "date_fr": "17/12/2026", "jour": "Jeudi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD2", "enseignant": "ATTAFI", "salle": "salle TD-BREGUET", "start_minutes": 945, "end_minutes": 1065}, {"id": "202701110930_BUT 3 SNRV_ATTAFI", "date": "2027-01-11", "date_fr": "11/01/2027", "jour": "Lundi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - Cours", "enseignant": "ATTAFI", "salle": "SALLE TD-PITOT", "start_minutes": 570, "end_minutes": 630}, {"id": "202701111030_BUT 3 SNRV_ATTAFI", "date": "2027-01-11", "date_fr": "11/01/2027", "jour": "Lundi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-PITOT", "start_minutes": 630, "end_minutes": 750}, {"id": "202701111345_BUT 3 SNRV_ATTAFI", "date": "2027-01-11", "date_fr": "11/01/2027", "jour": "Lundi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-PITOT", "start_minutes": 825, "end_minutes": 945}, {"id": "202701120830_BUT 3 SNRV_MOYSAN", "date": "2027-01-12", "date_fr": "12/01/2027", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202701121030_BUT 3 SNRV_MOYSAN", "date": "2027-01-12", "date_fr": "12/01/2027", "jour": "Mardi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - TD", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202701121345_BUT 3 SNRV_MOYSAN", "date": "2027-01-12", "date_fr": "12/01/2027", "jour": "Mardi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.02 DDS - Test", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202701130830_BUT 3 SNRV_VALLEE", "date": "2027-01-13", "date_fr": "13/01/2027", "jour": "Mercredi", "start_time": "08:30", "end_time": "12:30", "horaires": "08:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - TP", "enseignant": "VALLEE", "salle": "SALLE TD-CARNOT", "start_minutes": 510, "end_minutes": 750}, {"id": "202701131345_BUT 3 SNRV_VALLEE", "date": "2027-01-13", "date_fr": "13/01/2027", "jour": "Mercredi", "start_time": "13:45", "end_time": "17:45", "horaires": "13:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - TP", "enseignant": "VALLEE", "salle": "SALLE TD-CARNOT", "start_minutes": 825, "end_minutes": 1065}, {"id": "202701140830_BUT 3 SNRV_MOYSAN", "date": "2027-01-14", "date_fr": "14/01/2027", "jour": "Jeudi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "C R5.A.13.2 SNRV Sim Physique", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202701141030_BUT 3 SNRV_MOYSAN", "date": "2027-01-14", "date_fr": "14/01/2027", "jour": "Jeudi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "TD R5.A.13.2 SNRV Sim Physique", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202701141345_BUT 3 SNRV_MOYSAN", "date": "2027-01-14", "date_fr": "14/01/2027", "jour": "Jeudi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "Portfolio", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202701141545_BUT 3 SNRV_MOYSAN", "date": "2027-01-14", "date_fr": "14/01/2027", "jour": "Jeudi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "Portfolio", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1065}, {"id": "202701200830_BUT 3 SNRV_VALLEE", "date": "2027-01-20", "date_fr": "20/01/2027", "jour": "Mercredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "TD R5.A.13.2 SNRV Sim Physique", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202701201030_BUT 3 SNRV_VALLEE", "date": "2027-01-20", "date_fr": "20/01/2027", "jour": "Mercredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "TD R5.A.13.2 SNRV Sim Physique", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202701201345_BUT 3 SNRV_VALLEE", "date": "2027-01-20", "date_fr": "20/01/2027", "jour": "Mercredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.03 SDM - Test", "enseignant": "VALLEE", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202701210830_BUT 3 SNRV_MAZOYER", "date": "2027-01-21", "date_fr": "21/01/2027", "jour": "Jeudi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TD", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202701211030_BUT 3 SNRV_MAZOYER", "date": "2027-01-21", "date_fr": "21/01/2027", "jour": "Jeudi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TD", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202701211345_BUT 3 SNRV_MAZOYER", "date": "2027-01-21", "date_fr": "21/01/2027", "jour": "Jeudi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TD", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202701260830_BUT 3 SNRV_VALLEE", "date": "2027-01-26", "date_fr": "26/01/2027", "jour": "Mardi", "start_time": "08:30", "end_time": "12:30", "horaires": "08:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "TP R5.A.13.2 SNRV Sim Physique", "enseignant": "VALLEE", "salle": "salle INFO-BLAISE PASCAL", "start_minutes": 510, "end_minutes": 750}, {"id": "202701261345_BUT 3 SNRV_VALLEE", "date": "2027-01-26", "date_fr": "26/01/2027", "jour": "Mardi", "start_time": "13:45", "end_time": "17:45", "horaires": "13:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "TP R5.A.13.2 SNRV Sim Physique", "enseignant": "VALLEE", "salle": "salle INFO-BLAISE PASCAL", "start_minutes": 825, "end_minutes": 1065}, {"id": "202701270830_BUT 3 SNRV_MOYSAN", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "08:30", "end_time": "09:30", "horaires": "08:30 - 09:30", "cohorte": "BUT 3 SNRV", "cours": "R5.05 Construction TPM - Test", "enseignant": "MOYSAN", "salle": "SALLE TD-BLOCH", "start_minutes": 510, "end_minutes": 570}, {"id": "202701270930_BUT 3 SNRV_ATTAFI", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "09:30", "end_time": "10:30", "horaires": "09:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - Cours", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 570, "end_minutes": 630}, {"id": "202701271000_M1 MPAD_AMADEI", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "10:00", "end_time": "10:30", "horaires": "10:00 - 10:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 600, "end_minutes": 630}, {"id": "202701271030_BUT 3 SNRV_ATTAFI", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 630, "end_minutes": 750}, {"id": "202701271030_M1 MPAD_AMADEI", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 630, "end_minutes": 690}, {"id": "202701271130_M1 MPAD_AMADEI", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,13 - Anglais EXAM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 690, "end_minutes": 750}, {"id": "202701271345_BUT 3 SNRV_ATTAFI", "date": "2027-01-27", "date_fr": "27/01/2027", "jour": "Mercredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - TD", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 825, "end_minutes": 945}, {"id": "202701280830_BUT 3 SNRV_MOYSAN", "date": "2027-01-28", "date_fr": "28/01/2027", "jour": "Jeudi", "start_time": "08:30", "end_time": "12:30", "horaires": "08:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "TP R5.A.13.2 SNRV Sim Physique", "enseignant": "MOYSAN", "salle": "salle INFO-BLAISE PASCAL", "start_minutes": 510, "end_minutes": 750}, {"id": "202701281345_BUT 3 SNRV_MOYSAN", "date": "2027-01-28", "date_fr": "28/01/2027", "jour": "Jeudi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "Portfolio", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202701281545_BUT 3 SNRV_MOYSAN", "date": "2027-01-28", "date_fr": "28/01/2027", "jour": "Jeudi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "BUT 3 SNRV", "cours": "Portfolio", "enseignant": "MOYSAN", "salle": "SALLE TD-VINCI", "start_minutes": 945, "end_minutes": 1065}, {"id": "202701290830_BUT 3 SNRV_MAZOYER", "date": "2027-01-29", "date_fr": "29/01/2027", "jour": "Vendredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - TD", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202701291030_BUT 3 SNRV_MAZOYER", "date": "2027-01-29", "date_fr": "29/01/2027", "jour": "Vendredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "Préparation au TOEIC", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202701291345_BUT 3 SNRV_MAZOYER", "date": "2027-01-29", "date_fr": "29/01/2027", "jour": "Vendredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "Préparation au TOEIC", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202702010830_BUT 3 SNRV_ATTAFI", "date": "2027-02-01", "date_fr": "01/02/2027", "jour": "Lundi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "R5.04 Math - Test", "enseignant": "ATTAFI", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202702011030_BUT 3 SNRV_MAZOYER", "date": "2027-02-01", "date_fr": "01/02/2027", "jour": "Lundi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "Préparation au TOEIC", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202702011345_BUT 3 SNRV_MAZOYER", "date": "2027-02-01", "date_fr": "01/02/2027", "jour": "Lundi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "BUT 3 SNRV", "cours": "R5.11 Anglais - Test", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 825, "end_minutes": 945}, {"id": "202702021345_M2 MPAD_AMADEI", "date": "2027-02-02", "date_fr": "02/02/2027", "jour": "Mardi", "start_time": "13:45", "end_time": "14:45", "horaires": "13:45 - 14:45", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais TD", "enseignant": "AMADEI", "salle": "", "start_minutes": 825, "end_minutes": 885}, {"id": "202702021445_M2 MPAD_AMADEI", "date": "2027-02-02", "date_fr": "02/02/2027", "jour": "Mardi", "start_time": "14:45", "end_time": "15:45", "horaires": "14:45 - 15:45", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais TD", "enseignant": "AMADEI", "salle": "", "start_minutes": 885, "end_minutes": 945}, {"id": "202702021545_M2 MPAD_AMADEI", "date": "2027-02-02", "date_fr": "02/02/2027", "jour": "Mardi", "start_time": "15:45", "end_time": "16:45", "horaires": "15:45 - 16:45", "cohorte": "M2 MPAD", "cours": "ECUE 4.32 - Anglais EXAM", "enseignant": "AMADEI", "salle": "", "start_minutes": 945, "end_minutes": 1005}, {"id": "202702090830_M1 MPAD_AMADEI", "date": "2027-02-09", "date_fr": "09/02/2027", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 510, "end_minutes": 630}, {"id": "202702091030_M1 MPAD_AMADEI", "date": "2027-02-09", "date_fr": "09/02/2027", "jour": "Mardi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 630, "end_minutes": 750}, {"id": "202703150830_BUT 3 SNRV_MAZOYER", "date": "2027-03-15", "date_fr": "15/03/2027", "jour": "Lundi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "BUT 3 SNRV", "cours": "Préparation au TOEIC", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 510, "end_minutes": 630}, {"id": "202703151030_BUT 3 SNRV_MAZOYER", "date": "2027-03-15", "date_fr": "15/03/2027", "jour": "Lundi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "Préparation au TOEIC", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 630, "end_minutes": 750}, {"id": "202703170930_BUT 3 SNRV_MAZOYER", "date": "2027-03-17", "date_fr": "17/03/2027", "jour": "Mercredi", "start_time": "09:30", "end_time": "12:30", "horaires": "09:30 - 12:30", "cohorte": "BUT 3 SNRV", "cours": "Test Toiec", "enseignant": "MAZOYER", "salle": "SALLE TD-VINCI", "start_minutes": 570, "end_minutes": 750}, {"id": "202704060830_M1 MPAD_AMADEI", "date": "2027-04-06", "date_fr": "06/04/2027", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais TD", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 510, "end_minutes": 630}, {"id": "202704061030_M1 MPAD_AMADEI", "date": "2027-04-06", "date_fr": "06/04/2027", "jour": "Mardi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 630, "end_minutes": 690}, {"id": "202704061130_M1 MPAD_AMADEI", "date": "2027-04-06", "date_fr": "06/04/2027", "jour": "Mardi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 690, "end_minutes": 750}, {"id": "202706010830_M1 MPAD_AMADEI", "date": "2027-06-01", "date_fr": "01/06/2027", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais TD", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 510, "end_minutes": 630}, {"id": "202706011030_M1 MPAD_AMADEI", "date": "2027-06-01", "date_fr": "01/06/2027", "jour": "Mardi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais CM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 630, "end_minutes": 690}, {"id": "202706011130_M1 MPAD_AMADEI", "date": "2027-06-01", "date_fr": "01/06/2027", "jour": "Mardi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais TD", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 690, "end_minutes": 750}, {"id": "202706151030_M1 MPAD_AMADEI", "date": "2027-06-15", "date_fr": "15/06/2027", "jour": "Mardi", "start_time": "10:30", "end_time": "11:30", "horaires": "10:30 - 11:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais TD", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 630, "end_minutes": 690}, {"id": "202706151130_M1 MPAD_AMADEI", "date": "2027-06-15", "date_fr": "15/06/2027", "jour": "Mardi", "start_time": "11:30", "end_time": "12:30", "horaires": "11:30 - 12:30", "cohorte": "M1 MPAD", "cours": "ECUE 4,23 - Anglais EXAM", "enseignant": "AMADEI", "salle": "SALLE TD-ADER", "start_minutes": 690, "end_minutes": 750}, {"id": "202609080830_M2 MPAD_CORNUEAU", "date": "2026-09-08", "date_fr": "08/09/2026", "jour": "Mardi", "start_time": "08:30", "end_time": "12:30", "horaires": "08:30 - 12:30", "cohorte": "M2 MPAD", "cours": "Soutenances finales et conseil de perf M2 P1", "enseignant": "CORNUEAU", "salle": "", "start_minutes": 510, "end_minutes": 750}, {"id": "202609211345_LP MIA_MOYSAN", "date": "2026-09-21", "date_fr": "21/09/2026", "jour": "Lundi", "start_time": "13:45", "end_time": "17:15", "horaires": "13:45 - 17:15", "cohorte": "LP MIA", "cours": "S6 - Management de projet entreprise - CM", "enseignant": "MOYSAN", "salle": "Amphi Polyaéro", "start_minutes": 825, "end_minutes": 1035}, {"id": "202609220830_LP MIA_MOYSAN", "date": "2026-09-22", "date_fr": "22/09/2026", "jour": "Mardi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "LP MIA", "cours": "S6 - CND - Moysan - CM", "enseignant": "MOYSAN", "salle": "Amphi Polyaéro", "start_minutes": 510, "end_minutes": 630}, {"id": "202609221345_LP MIA_MOYSAN", "date": "2026-09-22", "date_fr": "22/09/2026", "jour": "Mardi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "LP MIA", "cours": "S6 - CND - Moysan - TD1", "enseignant": "MOYSAN", "salle": "SALLE TD-BLOCH", "start_minutes": 825, "end_minutes": 945}, {"id": "202609221545_LP MIA_MOYSAN", "date": "2026-09-22", "date_fr": "22/09/2026", "jour": "Mardi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "S6 - CND - Moysan - TD2", "enseignant": "MOYSAN", "salle": "SALLE TD-BLOCH", "start_minutes": 945, "end_minutes": 1065}, {"id": "202609230830_LP MIA_ATTAFI", "date": "2026-09-23", "date_fr": "23/09/2026", "jour": "Mercredi", "start_time": "08:30", "end_time": "10:30", "horaires": "08:30 - 10:30", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - CM", "enseignant": "ATTAFI", "salle": "Amphi Polyaéro", "start_minutes": 510, "end_minutes": 630}, {"id": "202609231030_LP MIA_ATTAFI", "date": "2026-09-23", "date_fr": "23/09/2026", "jour": "Mercredi", "start_time": "10:30", "end_time": "12:30", "horaires": "10:30 - 12:30", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - CM", "enseignant": "ATTAFI", "salle": "Amphi Polyaéro", "start_minutes": 630, "end_minutes": 750}, {"id": "202609231345_LP MIA_ATTAFI", "date": "2026-09-23", "date_fr": "23/09/2026", "jour": "Mercredi", "start_time": "13:45", "end_time": "15:45", "horaires": "13:45 - 15:45", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD1", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 825, "end_minutes": 945}, {"id": "202609231545_LP MIA_ATTAFI", "date": "2026-09-23", "date_fr": "23/09/2026", "jour": "Mercredi", "start_time": "15:45", "end_time": "17:45", "horaires": "15:45 - 17:45", "cohorte": "LP MIA", "cours": "S5 - Mathématiques générales - TD2", "enseignant": "ATTAFI", "salle": "SALLE TD-BLOCH", "start_minutes": 945, "end_minutes": 1065}];
+        let currentMonday = getMonday(new Date());
+        let currentView = 'grid';
+
+        // CORRECTIF 1 & 2 : Fonction pour convertir une date locale en ISO (YYYY-MM-DD) sans conversion UTC
+        function dateToLocalISO(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // CORRECTIF 3 : Fonction getMonday améliorée pour éviter les décalages UTC
+        function getMonday(d) {
+            const year = d.getFullYear();
+            const month = d.getMonth();
+            const date = d.getDate();
+            const newDate = new Date(year, month, date);
+            
+            const day = newDate.getDay();
+            
+            if (day === 6 || day === 0) {
+                const daysToAdd = (day === 6) ? 2 : 1;
+                newDate.setDate(newDate.getDate() + daysToAdd);
+            } else {
+                const diffToMonday = day - 1;
+                newDate.setDate(newDate.getDate() - diffToMonday);
+            }
+        
+            return newDate;
+        }
+
+        function formatDateFR(dateObj) {
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            return `${d}/${m}/${dateObj.getFullYear()}`;
+        }
+
+        function switchView(view) {
+            currentView = view;
+            const btnGrid = document.getElementById('btnViewGrid');
+            const btnTable = document.getElementById('btnViewTable');
+            const viewGrid = document.getElementById('viewGrid');
+            const viewTable = document.getElementById('viewTable');
+            const gridLegend = document.getElementById('gridLegend');
+            const tableLegend = document.getElementById('tableLegend');
+
+            if (view === 'grid') {
+                viewGrid.classList.remove('hidden');
+                viewTable.classList.add('hidden');
+                gridLegend.classList.remove('hidden');
+                tableLegend.classList.add('hidden');
+
+                btnGrid.className = 'px-3 py-1.5 text-xs font-medium rounded-md transition-all bg-blue-600 text-white shadow';
+                btnTable.className = 'px-3 py-1.5 text-xs font-medium rounded-md transition-all text-slate-300 hover:text-white hover:bg-slate-700';
+                renderGrid();
+            } else {
+                viewGrid.classList.add('hidden');
+                viewTable.classList.remove('hidden');
+                gridLegend.classList.add('hidden');
+                tableLegend.classList.remove('hidden');
+
+                btnTable.className = 'px-3 py-1.5 text-xs font-medium rounded-md transition-all bg-blue-600 text-white shadow';
+                btnGrid.className = 'px-3 py-1.5 text-xs font-medium rounded-md transition-all text-slate-300 hover:text-white hover:bg-slate-700';
+            }
+        }
+
+        function changeWeek(direction) {
+            currentMonday.setDate(currentMonday.getDate() + (direction * 7));
+            renderGrid();
+        }
+
+        function goToday() {
+            currentMonday = getMonday(new Date());
+            renderGrid();
+        }
+
+        function getCohorteColor(cohorte) {
+            switch(cohorte) {
+                case 'LP MIA': return 'bg-blue-100 text-blue-900 border-blue-300 hover:bg-blue-200';
+                case 'BUT 3 SNRV': return 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200';
+                case 'M1 MPAD': return 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200';
+                case 'M2 MPAD': return 'bg-purple-100 text-purple-900 border-purple-300 hover:bg-purple-200';
+                default: return 'bg-slate-100 text-slate-900 border-slate-300 hover:bg-slate-200';
+            }
+        }
+
+        function renderGrid() {
+            const searchFilter = document.getElementById('searchInput').value.toLowerCase().trim();
+            const daysNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+            const weekDates = [];
+
+            for (let i = 0; i < 5; i++) {
+                const d = new Date(currentMonday);
+                d.setDate(d.getDate() + i);
+                weekDates.push(d);
+
+                const headerEl = document.getElementById(`day-header-${i}`);
+                const isToday = new Date().toDateString() === d.toDateString();
+                headerEl.innerHTML = `
+                    <div class="${isToday ? 'text-blue-600 font-extrabold' : ''}">${daysNames[i]}</div>
+                    <div class="text-[10px] font-normal text-slate-500">${formatDateFR(d)}</div>
+                `;
+            }
+
+            const sunday = new Date(currentMonday);
+            sunday.setDate(sunday.getDate() + 4);
+            document.getElementById('currentWeekTitle').innerText = 
+                `Semaine du ${formatDateFR(currentMonday)} au ${formatDateFR(sunday)}`;
+
+            for (let i = 0; i < 5; i++) {
+                const col = document.getElementById(`col-day-${i}`);
+                col.innerHTML = '';
+            }
+
+            const startWeekIso = dateToLocalISO(currentMonday);
+            const endWeekIso = dateToLocalISO(sunday);
+
+            const weekEvents = COURS_DATA.filter(c => {
+                const matchesWeek = c.date >= startWeekIso && c.date <= endWeekIso;
+                if (!matchesWeek) return false;
+
+                if (searchFilter) {
+                    const fullText = `${c.enseignant} ${c.cohorte} ${c.cours} ${c.salle}`.toLowerCase();
+                    return fullText.includes(searchFilter);
+                }
+                return true;
+            });
+
+            for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
+                const dayDateStr = dateToLocalISO(weekDates[dayIdx]);
+                const dayEvents = weekEvents.filter(e => e.date === dayDateStr);
+                const colEl = document.getElementById(`col-day-${dayIdx}`);
+
+                if (dayEvents.length === 0) continue;
+
+                dayEvents.sort((a, b) => a.start_minutes - b.start_minutes);
+
+                const columns = [];
+                dayEvents.forEach(event => {
+                    let placed = false;
+                    for (let c = 0; c < columns.length; c++) {
+                        const lastEvent = columns[c][columns[c].length - 1];
+                        if (lastEvent.end_minutes <= event.start_minutes) {
+                            columns[c].push(event);
+                            event.colIdx = c;
+                            placed = true;
+                            break;
+                        }
+                    }
+                    if (!placed) {
+                        event.colIdx = columns.length;
+                        columns.push([event]);
+                    }
+                });
+
+                const totalCols = columns.length;
+
+                dayEvents.forEach(event => {
+                    const topPx = ((event.start_minutes - 420) / 60) * 60;
+                    const heightPx = Math.max(((event.end_minutes - event.start_minutes) / 60) * 60, 24);
+                    const widthPercent = 100 / totalCols;
+                    const leftPercent = event.colIdx * widthPercent;
+
+                    const colorStyle = getCohorteColor(event.cohorte);
+
+                    const card = document.createElement('div');
+                    card.className = `absolute rounded p-1 border text-xs shadow-sm overflow-hidden flex flex-col justify-center leading-tight transition-all cursor-pointer z-20 ${colorStyle}`;
+                    card.style.top = `${topPx}px`;
+                    card.style.height = `${heightPx}px`;
+                    card.style.width = `calc(${widthPercent}% - 2px)`;
+                    card.style.left = `${leftPercent}%`;
+
+                    card.innerHTML = `
+                        <div class="font-bold text-[11px] truncate uppercase tracking-wide" title="${event.enseignant}">${event.enseignant}</div>
+                        ${heightPx >= 40 ? `<div class="text-[10px] opacity-90 truncate font-medium">${event.cohorte}</div>` : ''}
+                    `;
+
+                    card.title = `${event.enseignant} (${event.cohorte})
+Horaires: ${event.horaires}
+Cours: ${event.cours}
+Salle: ${event.salle}`;
+
+                    colEl.appendChild(card);
+                });
+            }
+        }
+
+        function handleSearch() {
+            if (currentView === 'grid') {
+                renderGrid();
+            } else {
+                const input = document.getElementById('searchInput').value.toLowerCase();
+                const rows = document.querySelectorAll('#viewTable tbody tr');
+                rows.forEach(row => {
+                    const text = row.getAttribute('data-search-text').toLowerCase();
+                    row.style.display = text.includes(input) ? '' : 'none';
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGrid();
+        });
+    </script>
+</body>
+</html>
