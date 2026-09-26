@@ -361,7 +361,7 @@ def generer_excel(liste_cours):
 
 
 # ==============================================================================
-# 4. GENERATION HTML V2 (AVEC OPTION 1 CORRIGÉE & OPTION 2 INTACTE)
+# 4. GENERATION HTML V2 (AVEC CORRECTIONS FUSEAU HORAIRE)
 # ==============================================================================
 
 
@@ -525,7 +525,7 @@ def generer_html_v2(cours):
                 <span class="flex items-center gap-1.5 px-2 py-1 rounded bg-purple-100 text-purple-900 border border-purple-200 font-semibold"><span class="w-2.5 h-2.5 rounded-full bg-purple-600"></span> M2 MPAD</span>
             </div>
 
-            <!-- Légende pour la vue tableau (texte "Statut réservation :" supprimé) -->
+            <!-- Légende pour la vue tableau -->
             <div id="tableLegend" class="hidden flex items-center gap-4 text-slate-600 font-medium">
                 <span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-blue-100 text-blue-900"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> 2 jours passés</span>
                 <span class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-900"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 7 jours futurs</span>
@@ -630,22 +630,32 @@ def generer_html_v2(cours):
         let currentMonday = getMonday(new Date());
         let currentView = 'grid';
 
-       function getMonday(d) {
-            d = new Date(d);
-            const day = d.getDay(); // 0: Dimanche, 1: Lundi, ..., 6: Samedi
+        // CORRECTIF 1 & 2 : Fonction pour convertir une date locale en ISO (YYYY-MM-DD) sans conversion UTC
+        function dateToLocalISO(dateObj) {
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // CORRECTIF 3 : Fonction getMonday améliorée pour éviter les décalages UTC
+        function getMonday(d) {
+            const year = d.getFullYear();
+            const month = d.getMonth();
+            const date = d.getDate();
+            const newDate = new Date(year, month, date);
             
-            // Si c'est Samedi (6) ou Dimanche (0), on bascule directement sur la semaine suivante
+            const day = newDate.getDay();
+            
             if (day === 6 || day === 0) {
                 const daysToAdd = (day === 6) ? 2 : 1;
-                d.setDate(d.getDate() + daysToAdd);
+                newDate.setDate(newDate.getDate() + daysToAdd);
             } else {
-                // Du lundi (1) au vendredi (5) : on recule du nombre de jours nécessaires depuis le lundi
-                const diffToMonday = day - 1; // Lundi -> 0, Mardi -> 1, ..., Vendredi -> 4
-                d.setDate(d.getDate() - diffToMonday);
+                const diffToMonday = day - 1;
+                newDate.setDate(newDate.getDate() - diffToMonday);
             }
         
-            d.setHours(0, 0, 0, 0);
-            return d;
+            return newDate;
         }
 
         function formatDateFR(dateObj) {
@@ -731,8 +741,8 @@ def generer_html_v2(cours):
                 col.innerHTML = '';
             }
 
-            const startWeekIso = currentMonday.toISOString().split('T')[0];
-            const endWeekIso = sunday.toISOString().split('T')[0];
+            const startWeekIso = dateToLocalISO(currentMonday);
+            const endWeekIso = dateToLocalISO(sunday);
 
             const weekEvents = COURS_DATA.filter(c => {
                 const matchesWeek = c.date >= startWeekIso && c.date <= endWeekIso;
@@ -746,7 +756,7 @@ def generer_html_v2(cours):
             });
 
             for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
-                const dayDateStr = weekDates[dayIdx].toISOString().split('T')[0];
+                const dayDateStr = dateToLocalISO(weekDates[dayIdx]);
                 const dayEvents = weekEvents.filter(e => e.date === dayDateStr);
                 const colEl = document.getElementById(`col-day-${dayIdx}`);
 
@@ -830,20 +840,19 @@ def generer_html_v2(cours):
         f.write(html_content)
 
     print(f"🌐 Fichier HTML v2 généré avec succès : {os.path.abspath(FICHIER_HTML_SORTIE)}")
-          
- # ==============================================================================
+
+# ==============================================================================
 # 5. EXECUTION
-    #==============================================================================
-          
+# ==============================================================================
+
 if __name__ == "__main__":
     cours = extraire_cours()
 
-# Génération des fichiers de sortie
     generer_html_v2(cours)
 
-if cours:
-  generer_excel(cours)
-  print(
-      "\n✅ Traitement V2 terminé : Fichiers HTML et Excel générés avec"
-      " succès."
-  )
+    if cours:
+        generer_excel(cours)
+        print(
+            "\n✅ Traitement V2 terminé : Fichiers HTML et Excel générés avec"
+            " succès."
+        )
