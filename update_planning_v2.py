@@ -93,7 +93,7 @@ JOURS_FR = {
 # ==============================================================================
 
 
-def telecharger_ical_avec_retry(url, retries=3, backoff_factor=1):
+def telecharger_ical_avec_retry(url, retries=10, backoff_factor=1):
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
