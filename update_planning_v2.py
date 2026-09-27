@@ -848,9 +848,15 @@ def generer_html_v2(cours):
 if __name__ == "__main__":
     cours = extraire_cours()
 
-    generer_html_v2(cours)
-
-    if cours:
+    if not cours:
+        print(
+            "\n⚠️ ATTENTION : Aucune donnée n'a pu être récupérée auprès d'ADE."
+            "\n➡️ Les fichiers HTML et Excel ne sont pas mis à jour pour préserver"
+            " les données précédentes."
+            "\nVeuillez vérifier la connexion à ADE et relancer le script."
+        )
+    else:
+        generer_html_v2(cours)
         generer_excel(cours)
         print(
             "\n✅ Traitement V2 terminé : Fichiers HTML et Excel générés avec"
