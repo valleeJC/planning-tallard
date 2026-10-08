@@ -1,0 +1,68 @@
+name: Actualisation du Planning
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Tous les jours à 8h (heure française)
+  workflow_dispatch:      # Lancement manuel
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit:
+    runs-on: self-hosted
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Installer les dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests icalendar pandas openpyxl urllib3 tzdata
+
+      - name: Exécuter le script
+        env:
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          python update_planning_v2.py
+
+      - name: Déployer sur gh-pages (PowerShell)
+        shell: powershell
+        run: |
+          # 1. Ajout du chemin Git au PATH
+          $env:Path += ";C:\Program Files\Git\cmd;C:\Program Files\Git\bin"
+
+          # 2. Configuration de l'identité Git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 3. Nettoyage préventif
+          git checkout main -f
+          if (git branch --list gh-pages-temp) { git branch -D gh-pages-temp }
+
+          # 4. Copie du HTML généré vers index.html
+          Copy-Item Planning_Voitures_Tallard.html index.html -Force
+
+          # 5. Création de la branche orpheline
+          git checkout --orphan gh-pages-temp
+
+          # 6. Ajout des fichiers de rendu
+          git add -f index.html
+          if (Test-Path Planning_Voitures_Tallard.xlsx) { 
+              git add -f Planning_Voitures_Tallard.xlsx 
+          }
+
+          # 7. Commit et Push forcé
+          git commit -m "🤖 Mise à jour automatique du planning"
+          git push origin gh-pages-temp:gh-pages --force
+
+          # 8. Nettoyage final propre
+          git checkout main -f
+          git branch -D gh-pages-temp
