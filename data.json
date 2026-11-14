@@ -1,0 +1,3575 @@
+{
+ "maj": "2026-11-14T14:13+01:00",
+ "profs": [
+  "ATTAFI",
+  "CORNUEAU",
+  "GUEUDRE",
+  "VALLEE",
+  "SANCHEZ",
+  "CHAVES-JACOB",
+  "AMADEI",
+  "MAZOYER",
+  "RAYNAL",
+  "MOYSAN"
+ ],
+ "cohortes": [
+  "LP MIA",
+  "BUT 3 SNRV",
+  "M1 MPAD",
+  "M2 MPAD"
+ ],
+ "cours": [
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363738302d312d30",
+   "date": "2026-09-08",
+   "debut": "08:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "Soutenances finales et conseil de perf M2 P1",
+   "salle": "",
+   "profs": [
+    "CORNUEAU"
+   ],
+   "modifie_ade": "2026-08-27"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d39323932322d302d30",
+   "date": "2026-09-21",
+   "debut": "13:45",
+   "fin": "17:15",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - Management de projet entreprise - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732322d302d30",
+   "date": "2026-09-22",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - Moysan - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d352d30",
+   "date": "2026-09-22",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d35",
+   "date": "2026-09-22",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD2",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d322d30",
+   "date": "2026-09-23",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d312d30",
+   "date": "2026-09-23",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d332d30",
+   "date": "2026-09-23",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d332d30",
+   "date": "2026-09-23",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD2",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-21"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d34353635342d312d30",
+   "date": "2026-09-28",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add MOY CM",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132313538322d302d30",
+   "date": "2026-09-29",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction Hydrau - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638362d342d30",
+   "date": "2026-09-29",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638372d302d33",
+   "date": "2026-09-29",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638382d302d32",
+   "date": "2026-09-29",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - TD2",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638382d302d33",
+   "date": "2026-09-30",
+   "debut": "08:00",
+   "fin": "10:00",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - TD2",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-19"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d352d30",
+   "date": "2026-09-30",
+   "debut": "08:00",
+   "fin": "10:00",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-19"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638372d302d31",
+   "date": "2026-09-30",
+   "debut": "10:00",
+   "fin": "12:00",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - TD1",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-19"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d352d30",
+   "date": "2026-09-30",
+   "debut": "10:00",
+   "fin": "12:00",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD2",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-25"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638382d302d31",
+   "date": "2026-09-30",
+   "debut": "13:15",
+   "fin": "15:15",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - TD2",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-29"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638372d302d32",
+   "date": "2026-09-30",
+   "debut": "15:15",
+   "fin": "17:15",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Anglais - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-29"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d33",
+   "date": "2026-10-01",
+   "debut": "08:30",
+   "fin": "09:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d34",
+   "date": "2026-10-01",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d35",
+   "date": "2026-10-01",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d36",
+   "date": "2026-10-01",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d30",
+   "date": "2026-10-01",
+   "debut": "13:45",
+   "fin": "14:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d302d30",
+   "date": "2026-10-01",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d31",
+   "date": "2026-10-01",
+   "debut": "14:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132313538322d302d31",
+   "date": "2026-10-01",
+   "debut": "15:45",
+   "fin": "16:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction Hydrau - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d322d30",
+   "date": "2026-10-01",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d30",
+   "date": "2026-10-05",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d34",
+   "date": "2026-10-05",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD2",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-29"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d30",
+   "date": "2026-10-05",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d342d30",
+   "date": "2026-10-05",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d31",
+   "date": "2026-10-05",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d302d30",
+   "date": "2026-10-05",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232393432352d302d30",
+   "date": "2026-10-05",
+   "debut": "17:45",
+   "fin": "19:15",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "Soutien Maths",
+   "salle": "",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-30"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d35",
+   "date": "2026-10-06",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-02"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37373334342d302d30",
+   "date": "2026-10-06",
+   "debut": "15:45",
+   "fin": "17:15",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction Hydrau - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-02"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139303734372d302d30",
+   "date": "2026-10-07",
+   "debut": "08:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.08 OPI TP serious game",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "SANCHEZ"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139303734372d312d30",
+   "date": "2026-10-07",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.08 OPI TP serious game",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "SANCHEZ"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323735352d312d30",
+   "date": "2026-10-07",
+   "debut": "15:45",
+   "fin": "16:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.08 OPI - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "SANCHEZ"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323735352d312d31",
+   "date": "2026-10-07",
+   "debut": "16:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.08 OPI - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "SANCHEZ"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37373334342d312d30",
+   "date": "2026-10-09",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction Hydrau - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-02"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232333235392d302d30",
+   "date": "2026-10-09",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add VAL CM",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d30",
+   "date": "2026-10-09",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232333235392d312d30",
+   "date": "2026-10-09",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add VAL CM",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d33",
+   "date": "2026-10-12",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD2",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-05"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d342d30",
+   "date": "2026-10-12",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD1",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-10-05"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d332d30",
+   "date": "2026-10-12",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD1",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d32",
+   "date": "2026-10-12",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD2",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d322d30",
+   "date": "2026-10-12",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD1",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d34353635342d322d30",
+   "date": "2026-10-13",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add MOY CM",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232333235332d312d30",
+   "date": "2026-10-13",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add  MOY TD",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-02"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d37",
+   "date": "2026-10-13",
+   "debut": "13:45",
+   "fin": "14:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d32",
+   "date": "2026-10-13",
+   "debut": "14:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37373334342d322d30",
+   "date": "2026-10-13",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction Hydrau - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d332d30",
+   "date": "2026-11-17",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-11-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d39323932322d362d30",
+   "date": "2026-11-20",
+   "debut": "10:30",
+   "fin": "11:00",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - Management de projet entreprise - CM",
+   "salle": "Amphi Polyaéro",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3233343930352d302d30",
+   "date": "2026-11-20",
+   "debut": "11:00",
+   "fin": "11:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "RDV AEROTECH",
+   "salle": "",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393538352d302d30",
+   "date": "2026-11-25",
+   "debut": "08:30",
+   "fin": "09:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - Cours _ SNRV",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393538352d302d31",
+   "date": "2026-11-25",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - Cours _ SNRV",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d32",
+   "date": "2026-11-25",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d31",
+   "date": "2026-11-25",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-02"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393530372d302d30",
+   "date": "2026-11-25",
+   "debut": "15:45",
+   "fin": "17:15",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.06 Production - Test",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-10-20"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323632382d302d30",
+   "date": "2026-11-26",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.07 Métrologie - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "RAYNAL"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633332d302d30",
+   "date": "2026-11-26",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.07 Métrologie - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "RAYNAL"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633332d302d31",
+   "date": "2026-11-26",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.07 Métrologie - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "RAYNAL"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d32",
+   "date": "2026-11-27",
+   "debut": "08:30",
+   "fin": "09:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - Cours",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-10-14"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d31",
+   "date": "2026-11-27",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - Cours",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-21"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d32",
+   "date": "2026-11-27",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d33",
+   "date": "2026-11-27",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d33",
+   "date": "2026-12-01",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d33",
+   "date": "2026-12-01",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d35",
+   "date": "2026-12-01",
+   "debut": "13:45",
+   "fin": "14:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d36",
+   "date": "2026-12-01",
+   "debut": "14:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d31",
+   "date": "2026-12-01",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Portfolio",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d30",
+   "date": "2026-12-02",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-09-23"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d31",
+   "date": "2026-12-02",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343937352d302d32",
+   "date": "2026-12-03",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TPA1",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343937352d302d31",
+   "date": "2026-12-03",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TPA1",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d312d30",
+   "date": "2026-12-03",
+   "debut": "13:45",
+   "fin": "14:45",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d362d30",
+   "date": "2026-12-03",
+   "debut": "14:45",
+   "fin": "15:45",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d332d30",
+   "date": "2026-12-03",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d34",
+   "date": "2026-12-07",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132313539302d302d30",
+   "date": "2026-12-08",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction Hydrau - Test",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d34",
+   "date": "2026-12-08",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Cours",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d31",
+   "date": "2026-12-09",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD2",
+   "salle": "salle INFO-BLAISE PASCAL",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d32",
+   "date": "2026-12-09",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d312d30",
+   "date": "2026-12-09",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD1",
+   "salle": "salle TD-BREGUET",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d33",
+   "date": "2026-12-09",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d30",
+   "date": "2026-12-09",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD2",
+   "salle": "salle INFO-BLAISE PASCAL",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37323732312d312d30",
+   "date": "2026-12-09",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add VAL TD",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d302d30",
+   "date": "2026-12-09",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S6 - CND - TD1",
+   "salle": "salle TD-BREGUET",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37323732312d302d30",
+   "date": "2026-12-09",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 2.32 - Mat. Fab Add VAL TD",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343937352d302d30",
+   "date": "2026-12-10",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TPA1",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d30",
+   "date": "2026-12-10",
+   "debut": "08:30",
+   "fin": "09:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-03"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d33",
+   "date": "2026-12-10",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais TD",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-03"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d34",
+   "date": "2026-12-10",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d35",
+   "date": "2026-12-10",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais TD",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-03"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d31",
+   "date": "2026-12-10",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-03"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633392d302d30",
+   "date": "2026-12-11",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.07 Métrologie - TP",
+   "salle": "SALLE INFO-ST EXUPERY",
+   "profs": [
+    "RAYNAL"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633392d302d31",
+   "date": "2026-12-11",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.07 Métrologie - TP",
+   "salle": "SALLE INFO-ST EXUPERY",
+   "profs": [
+    "RAYNAL"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d322d30",
+   "date": "2026-12-17",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD1",
+   "salle": "salle TD-BREGUET",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d342d30",
+   "date": "2026-12-17",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD2",
+   "salle": "salle TD-BREGUET",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d312d30",
+   "date": "2026-12-17",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD1",
+   "salle": "salle TD-BREGUET",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d31",
+   "date": "2026-12-17",
+   "debut": "13:45",
+   "fin": "14:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais TD",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d322d30",
+   "date": "2026-12-17",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "LP MIA"
+   ],
+   "titre": "S5 - Mathématiques générales - TD2",
+   "salle": "salle TD-BREGUET",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-09-17"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d32",
+   "date": "2026-12-17",
+   "debut": "18:00",
+   "fin": "19:00",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais CM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d34",
+   "date": "2026-12-17",
+   "debut": "19:00",
+   "fin": "20:00",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais TD",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-10-06"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d33",
+   "date": "2027-01-11",
+   "debut": "09:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - Cours",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d34",
+   "date": "2027-01-11",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d37",
+   "date": "2027-01-11",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-PITOT",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d35",
+   "date": "2027-01-11",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-10-14"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d36",
+   "date": "2027-01-12",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d37",
+   "date": "2027-01-12",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334352d302d30",
+   "date": "2027-01-12",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.02 DDS - Test",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383731342d302d30",
+   "date": "2027-01-13",
+   "debut": "08:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - TP",
+   "salle": "SALLE TD-CARNOT",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383731342d302d31",
+   "date": "2027-01-13",
+   "debut": "13:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - TP",
+   "salle": "SALLE TD-CARNOT",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237342d302d30",
+   "date": "2027-01-14",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "C R5.A.13.2 SNRV Sim Physique",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383735342d302d30",
+   "date": "2027-01-14",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "TD R5.A.13.2 SNRV Sim Physique",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d30",
+   "date": "2027-01-14",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Portfolio",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d34",
+   "date": "2027-01-14",
+   "debut": "15:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Portfolio",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383735342d302d32",
+   "date": "2027-01-20",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "TD R5.A.13.2 SNRV Sim Physique",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383735342d302d31",
+   "date": "2027-01-20",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "TD R5.A.13.2 SNRV Sim Physique",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393737302d302d30",
+   "date": "2027-01-20",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.03 SDM - Test",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-09-08"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d30",
+   "date": "2027-01-21",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d31",
+   "date": "2027-01-21",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-07-24"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d32",
+   "date": "2027-01-21",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-21"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132303036352d302d30",
+   "date": "2027-01-25",
+   "debut": "15:45",
+   "fin": "16:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.05 Construction TPM - Test",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237392d302d30",
+   "date": "2027-01-26",
+   "debut": "08:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "TP R5.A.13.2 SNRV Sim Physique",
+   "salle": "salle INFO-BLAISE PASCAL",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237392d302d32",
+   "date": "2027-01-26",
+   "debut": "13:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "TP R5.A.13.2 SNRV Sim Physique",
+   "salle": "salle INFO-BLAISE PASCAL",
+   "profs": [
+    "VALLEE"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d352d30",
+   "date": "2027-01-27",
+   "debut": "10:00",
+   "fin": "10:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d36",
+   "date": "2027-01-27",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - TD",
+   "salle": "SALLE TD-BLOCH",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-10-14"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d342d30",
+   "date": "2027-01-27",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3134323735302d302d30",
+   "date": "2027-01-27",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,13 - Anglais EXAM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237392d302d31",
+   "date": "2027-01-28",
+   "debut": "13:45",
+   "fin": "17:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "TP R5.A.13.2 SNRV Sim Physique",
+   "salle": "salle INFO-BLAISE PASCAL",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d33",
+   "date": "2027-01-29",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - TD",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-21"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d30",
+   "date": "2027-01-29",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Préparation au TOEIC",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-18"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d34",
+   "date": "2027-01-29",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Préparation au TOEIC",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-21"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d33",
+   "date": "2027-01-30",
+   "debut": "07:15",
+   "fin": "09:15",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Portfolio",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d32",
+   "date": "2027-01-30",
+   "debut": "09:15",
+   "fin": "11:15",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Portfolio",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393837362d302d30",
+   "date": "2027-02-01",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.04 Math - Test",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "ATTAFI"
+   ],
+   "modifie_ade": "2026-07-16"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d31",
+   "date": "2027-02-01",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Préparation au TOEIC",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-18"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132353033392d302d30",
+   "date": "2027-02-01",
+   "debut": "13:45",
+   "fin": "15:45",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "R5.11 Anglais - Test",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-28"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d32",
+   "date": "2027-02-02",
+   "debut": "13:45",
+   "fin": "14:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais TD",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-15"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d30",
+   "date": "2027-02-02",
+   "debut": "14:45",
+   "fin": "15:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais TD",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-15"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333732312d302d30",
+   "date": "2027-02-02",
+   "debut": "15:45",
+   "fin": "16:45",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "ECUE 4.32 - Anglais EXAM",
+   "salle": "",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-09-22"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d302d30",
+   "date": "2027-02-09",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d322d30",
+   "date": "2027-02-09",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d32",
+   "date": "2027-03-15",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Préparation au TOEIC",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-18"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d33",
+   "date": "2027-03-15",
+   "debut": "10:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Préparation au TOEIC",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-18"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3235313736352d302d30",
+   "date": "2027-03-17",
+   "debut": "09:30",
+   "fin": "12:30",
+   "cohortes": [
+    "BUT 3 SNRV"
+   ],
+   "titre": "Test Toiec",
+   "salle": "SALLE TD-VINCI",
+   "profs": [
+    "MAZOYER"
+   ],
+   "modifie_ade": "2026-09-18"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d322d30",
+   "date": "2027-04-06",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais TD",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d342d30",
+   "date": "2027-04-06",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d332d30",
+   "date": "2027-04-06",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d302d30",
+   "date": "2027-06-01",
+   "debut": "08:30",
+   "fin": "10:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais TD",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d312d30",
+   "date": "2027-06-01",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais CM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d312d30",
+   "date": "2027-06-01",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais TD",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3235323235392d302d30",
+   "date": "2027-06-14",
+   "debut": "12:30",
+   "fin": "16:30",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "Le Bourget M2",
+   "salle": "",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3235323235392d302d32",
+   "date": "2027-06-15",
+   "debut": "09:00",
+   "fin": "13:00",
+   "cohortes": [
+    "M2 MPAD"
+   ],
+   "titre": "Le Bourget M2",
+   "salle": "",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d332d30",
+   "date": "2027-06-15",
+   "debut": "10:30",
+   "fin": "11:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais TD",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363237312d302d30",
+   "date": "2027-06-15",
+   "debut": "11:30",
+   "fin": "12:30",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "ECUE 4,23 - Anglais EXAM",
+   "salle": "SALLE TD-ADER",
+   "profs": [
+    "AMADEI"
+   ],
+   "modifie_ade": "2026-08-26"
+  },
+  {
+   "uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d39343633322d302d33",
+   "date": "2027-06-16",
+   "debut": "13:00",
+   "fin": "17:00",
+   "cohortes": [
+    "M1 MPAD"
+   ],
+   "titre": "Le Bourget M1",
+   "salle": "",
+   "profs": [
+    "MOYSAN"
+   ],
+   "modifie_ade": "2026-11-09"
+  }
+ ],
+ "changelog": [
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-01",
+    "debut": "15:45",
+    "fin": "17:45",
+    "titre": "Portfolio",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-29",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "Préparation au TOEIC",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-28",
+    "debut": "13:45",
+    "fin": "17:45",
+    "titre": "TP R5.A.13.2 SNRV Sim Physique",
+    "salle": "salle INFO-BLAISE PASCAL",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-12",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.02 DDS - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-21",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.11 Anglais - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-29",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.11 Anglais - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-21",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.11 Anglais - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-03-15",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "Préparation au TOEIC",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-25",
+    "debut": "09:30",
+    "fin": "10:30",
+    "titre": "R5.03 SDM - Cours _ SNRV",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-11",
+    "debut": "09:30",
+    "fin": "10:30",
+    "titre": "R5.04 Math - Cours",
+    "salle": "SALLE TD-PITOT",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-20",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "TD R5.A.13.2 SNRV Sim Physique",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-30",
+    "debut": "09:15",
+    "fin": "11:15",
+    "titre": "Portfolio",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-29",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "Préparation au TOEIC",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-03-15",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "Préparation au TOEIC",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-11",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.04 Math - TD",
+    "salle": "SALLE TD-PITOT",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-08",
+    "debut": "11:30",
+    "fin": "12:30",
+    "titre": "R5.02 DDS - Cours",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-01",
+    "debut": "13:45",
+    "fin": "14:45",
+    "titre": "R5.02 DDS - Cours",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-02-01",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.11 Anglais - Test",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-11",
+    "debut": "15:45",
+    "fin": "17:45",
+    "titre": "R5.04 Math - TD",
+    "salle": "SALLE TD-BLOCH",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-27",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.04 Math - TD",
+    "salle": "SALLE TD-ADER",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-14",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "Portfolio",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-11",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.04 Math - TD",
+    "salle": "SALLE TD-PITOT",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-13",
+    "debut": "13:45",
+    "fin": "17:45",
+    "titre": "R5.03 SDM - TP",
+    "salle": "SALLE TD-CARNOT",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-03",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.11 Anglais - TPA1",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-10",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.11 Anglais - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-01",
+    "debut": "14:45",
+    "fin": "15:45",
+    "titre": "R5.02 DDS - Cours",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-12",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.02 DDS - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-13",
+    "debut": "08:30",
+    "fin": "12:30",
+    "titre": "R5.03 SDM - TP",
+    "salle": "SALLE TD-CARNOT",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-26",
+    "debut": "15:45",
+    "fin": "17:45",
+    "titre": "R5.07 Métrologie - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "RAYNAL"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-27",
+    "debut": "08:30",
+    "fin": "09:30",
+    "titre": "R5.04 Math - Cours",
+    "salle": "SALLE TD-ADER",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-25",
+    "debut": "15:45",
+    "fin": "16:45",
+    "titre": "R5.05 Construction TPM - Test",
+    "salle": "SALLE TD-BLOCH",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-14",
+    "debut": "15:45",
+    "fin": "17:45",
+    "titre": "Portfolio",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-02",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.03 SDM - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-27",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.04 Math - TD",
+    "salle": "SALLE TD-ADER",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-20",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "TD R5.A.13.2 SNRV Sim Physique",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-25",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.02 DDS - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-02-01",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.04 Math - Test",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-26",
+    "debut": "08:30",
+    "fin": "12:30",
+    "titre": "TP R5.A.13.2 SNRV Sim Physique",
+    "salle": "salle INFO-BLAISE PASCAL",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-08",
+    "debut": "10:30",
+    "fin": "11:30",
+    "titre": "R5.05 Construction Hydrau - Test",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-09",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.03 SDM - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-03",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.11 Anglais - TPA1",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-02",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.03 SDM - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-03-17",
+    "debut": "09:30",
+    "fin": "12:30",
+    "titre": "Test Toiec",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-01",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.02 DDS - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-21",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.11 Anglais - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-11",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.07 Métrologie - TP",
+    "salle": "SALLE INFO-ST EXUPERY",
+    "profs": [
+     "RAYNAL"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-09",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.03 SDM - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-11",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.07 Métrologie - TP",
+    "salle": "SALLE INFO-ST EXUPERY",
+    "profs": [
+     "RAYNAL"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-26",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.07 Métrologie - Cours",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "RAYNAL"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-07",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.02 DDS - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-14",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "TD R5.A.13.2 SNRV Sim Physique",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-27",
+    "debut": "09:30",
+    "fin": "10:30",
+    "titre": "R5.04 Math - Cours",
+    "salle": "SALLE TD-ADER",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-01",
+    "debut": "09:30",
+    "fin": "10:30",
+    "titre": "R5.02 DDS - Cours",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-25",
+    "debut": "08:30",
+    "fin": "09:30",
+    "titre": "R5.03 SDM - Cours _ SNRV",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-14",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "C R5.A.13.2 SNRV Sim Physique",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-20",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.03 SDM - Test",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-25",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.02 DDS - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-12-10",
+    "debut": "08:30",
+    "fin": "10:30",
+    "titre": "R5.11 Anglais - TPA1",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-26",
+    "debut": "13:45",
+    "fin": "17:45",
+    "titre": "TP R5.A.13.2 SNRV Sim Physique",
+    "salle": "salle INFO-BLAISE PASCAL",
+    "profs": [
+     "VALLEE"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-02-01",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "Préparation au TOEIC",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MAZOYER"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-27",
+    "debut": "10:30",
+    "fin": "12:30",
+    "titre": "R5.04 Math - TD",
+    "salle": "SALLE TD-BLOCH",
+    "profs": [
+     "ATTAFI"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-30",
+    "debut": "07:15",
+    "fin": "09:15",
+    "titre": "Portfolio",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-26",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.07 Métrologie - TD",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "RAYNAL"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2026-11-25",
+    "debut": "15:45",
+    "fin": "17:15",
+    "titre": "R5.06 Production - Test",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  },
+  {
+   "type": "ajout",
+   "quand": "2026-11-14T14:13+01:00",
+   "apres": {
+    "date": "2027-01-12",
+    "debut": "13:45",
+    "fin": "15:45",
+    "titre": "R5.02 DDS - Test",
+    "salle": "SALLE TD-VINCI",
+    "profs": [
+     "MOYSAN"
+    ],
+    "cohortes": [
+     "BUT 3 SNRV"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voiture Tallard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+<style>
+:root {
+  --bg: #f4f5f7; --surface: #fff; --surface-2: #f8f9fb; --line: #e3e6eb; --line-2: #d0d5dd;
+  --text: #1b2230; --muted: #667085; --faint: #98a2b3;
+  --accent: #2f6fde; --accent-soft: #e8f0fd; --accent-text: #fff;
+  --ok: #1a7f4b; --ok-soft: #e3f5ea; --warn: #b54708; --warn-soft: #fef0e1; --bad: #c4320a; --bad-soft: #fde8e4;
+  --travel: repeating-linear-gradient(135deg, #c9d1dd 0 4px, #e6eaf0 4px 8px);
+  --ev-l: 92%; --ev-s: 70%; --ev-border-l: 46%; --ev-text-l: 24%;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.08);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1218; --surface: #171b23; --surface-2: #1d222c; --line: #2a303c; --line-2: #39404e;
+    --text: #e6e9ef; --muted: #9aa3b2; --faint: #6b7385;
+    --accent: #6d9ff5; --accent-soft: #1f2d47; --accent-text: #0f1218;
+    --ok: #5dd39e; --ok-soft: #173326; --warn: #f5a35c; --warn-soft: #3a2817; --bad: #ff8a70; --bad-soft: #3d1d17;
+    --travel: repeating-linear-gradient(135deg, #343c4a 0 4px, #232935 4px 8px);
+    --ev-l: 24%; --ev-s: 40%; --ev-border-l: 55%; --ev-text-l: 86%;
+    --shadow: none; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1218; --surface: #171b23; --surface-2: #1d222c; --line: #2a303c; --line-2: #39404e;
+  --text: #e6e9ef; --muted: #9aa3b2; --faint: #6b7385;
+  --accent: #6d9ff5; --accent-soft: #1f2d47; --accent-text: #0f1218;
+  --ok: #5dd39e; --ok-soft: #173326; --warn: #f5a35c; --warn-soft: #3a2817; --bad: #ff8a70; --bad-soft: #3d1d17;
+  --travel: repeating-linear-gradient(135deg, #343c4a 0 4px, #232935 4px 8px);
+  --ev-l: 24%; --ev-s: 40%; --ev-border-l: 55%; --ev-text-l: 86%;
+  --shadow: none; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+button, select, input { font: inherit; color: inherit; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* ---------- En-tête ---------- */
+header { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 50; }
+.top { display: flex; align-items: center; gap: 12px; padding: 12px 0; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.brand h1 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
+.brand .sub { color: var(--muted); font-size: 12px; }
+.me { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+select, input[type=search], input[type=number] {
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 10px; }
+input[type=search] { width: 190px; }
+.icon-btn { background: none; border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 9px; cursor: pointer; }
+.icon-btn:hover { background: var(--surface-2); }
+nav.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+nav.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 12px;
+  color: var(--muted); cursor: pointer; white-space: nowrap; font-weight: 500; }
+nav.tabs button:hover { color: var(--text); }
+nav.tabs button[aria-selected=true] { color: var(--accent); border-bottom-color: var(--accent); }
+.badge { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; font-size: 11px; line-height: 18px;
+  background: var(--bad); color: #fff; text-align: center; margin-left: 4px; font-weight: 600; }
+
+main { padding: 18px 0 40px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); }
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar .spacer { flex: 1; }
+.btn { background: var(--surface); border: 1px solid var(--line-2); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+.empty { padding: 40px 16px; text-align: center; color: var(--muted); }
+
+/* Pastille enseignant : teinte via --h */
+.prof { --h: 210; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px;
+  padding: 1px 7px; border-radius: 6px; white-space: nowrap;
+  background: hsl(var(--h) var(--ev-s) var(--ev-l)); color: hsl(var(--h) 60% var(--ev-text-l)); }
+.prof.is-me { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ---------- Synthèse « mes prochains trajets » ---------- */
+.next { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.next .card { padding: 12px 14px; cursor: pointer; }
+.next .card:hover { border-color: var(--accent); }
+.next .d { font-weight: 600; text-transform: capitalize; }
+.next .t { font-variant-numeric: tabular-nums; margin: 2px 0 6px; }
+.next .w { font-size: 12px; color: var(--muted); }
+
+/* ---------- Vue covoiturage ---------- */
+.day { margin-bottom: 14px; overflow: hidden; }
+.day.today { border-color: var(--accent); }
+.day-h { display: flex; align-items: baseline; gap: 10px; padding: 11px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.day-h h3 { margin: 0; font-size: 15px; text-transform: capitalize; }
+.day-h .tag { font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.day-h .tag.today { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-weight: 600; }
+.day-h .tag.ok { background: var(--ok-soft); color: var(--ok); border-color: transparent; font-weight: 600; }
+.grp { display: grid; grid-template-columns: 230px 1fr; border-bottom: 1px solid var(--line); }
+.grp:last-child { border-bottom: 0; }
+.grp-info { padding: 10px 16px; border-right: 1px solid var(--line); background: var(--surface-2); }
+.grp.ok .grp-info { background: var(--ok-soft); }
+.grp-info .n { font-weight: 600; font-size: 13px; }
+.grp.ok .grp-info .n { color: var(--ok); }
+.grp-info .per { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.grp-info .times { font-variant-numeric: tabular-nums; font-size: 12.5px; margin-top: 4px; }
+.grp-info .note { font-size: 12px; color: var(--warn); margin-top: 4px; }
+.prof .moon { font-weight: 400; opacity: .8; }
+.lanes { position: relative; padding: 8px 12px 8px 0; }
+.lane { position: relative; height: 26px; margin: 3px 0; }
+.lane-name { position: absolute; left: 10px; top: 4px; z-index: 2; }
+.track { position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin-left: 110px; }
+.seg { position: absolute; top: 3px; bottom: 3px; border-radius: 5px; overflow: hidden; white-space: nowrap;
+  font-size: 11px; line-height: 20px; padding: 0 5px; text-overflow: ellipsis; }
+.seg.travel { background: var(--travel); top: 8px; bottom: 8px; border-radius: 3px; }
+.seg.site { background: var(--line); top: 10px; bottom: 10px; border-radius: 2px; }
+.seg.course { --h: 210; background: hsl(var(--h) var(--ev-s) var(--ev-l)); color: hsl(var(--h) 60% var(--ev-text-l));
+  border-left: 3px solid hsl(var(--h) 60% var(--ev-border-l)); cursor: default; }
+.axis { position: relative; height: 18px; margin-left: 110px; }
+.axis span { position: absolute; transform: translateX(-50%); font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.grid-lines { position: absolute; top: 0; bottom: 0; left: 110px; right: 12px; pointer-events: none; }
+.grid-lines i { position: absolute; top: 0; bottom: 0; border-left: 1px dashed var(--line); }
+.more { display: block; margin: 6px auto 0; }
+
+/* ---------- Vue semaine ---------- */
+.week { overflow: hidden; }
+.week-head, .week-body { display: grid; grid-template-columns: 52px repeat(5, minmax(0, 1fr)); }
+.week-head > div { padding: 8px 6px; text-align: center; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  font-weight: 600; font-size: 13px; text-transform: capitalize; }
+.week-head > div:first-child { border-left: 0; }
+.week-head .date { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+.week-head .today { color: var(--accent); }
+.week-head .count { display: block; font-weight: 500; font-size: 11px; color: var(--muted); text-transform: none; }
+.week-body { position: relative; }
+.hours { position: relative; }
+.hours span { position: absolute; right: 6px; transform: translateY(-50%); font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.wcol { position: relative; border-left: 1px solid var(--line); }
+.wcol.today { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+.hline { position: absolute; left: 52px; right: 0; border-top: 1px solid var(--line); pointer-events: none; }
+.hline.half { border-top-style: dotted; }
+.now-line { position: absolute; left: 0; right: 0; border-top: 2px solid var(--bad); z-index: 5; }
+.ev { --h: 210; position: absolute; border-radius: 6px; padding: 3px 5px; overflow: hidden; font-size: 11px; line-height: 1.25;
+  background: hsl(var(--h) var(--ev-s) var(--ev-l)); color: hsl(var(--h) 60% var(--ev-text-l));
+  border-left: 3px solid hsl(var(--h) 60% var(--ev-border-l)); cursor: pointer; }
+.ev:hover { z-index: 4; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+.ev b { display: block; font-size: 11.5px; text-transform: uppercase; letter-spacing: .02em; }
+.ev .x { opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev.is-me { outline: 2px solid var(--accent); outline-offset: -1px; }
+.ev.dim { opacity: .25; }
+
+/* ---------- Vue mois ---------- */
+.month { overflow: hidden; }
+.mgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.mgrid .dow { padding: 7px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); text-align: center; }
+.mcell { min-height: 92px; padding: 6px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); cursor: pointer; }
+.mcell:nth-child(5n) { border-right: 0; }
+.mcell:hover { background: var(--surface-2); }
+.mcell.out { background: var(--surface-2); color: var(--faint); }
+.mcell .num { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
+.mcell.today .num span:first-child { background: var(--accent); color: var(--accent-text); border-radius: 10px; padding: 0 6px; }
+.mcell .cars { font-weight: 500; color: var(--muted); }
+.mcell .chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+.mcell .prof { font-size: 10.5px; padding: 0 5px; }
+
+/* ---------- Liste ---------- */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); position: sticky; top: 0; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr.sep td { background: var(--surface-2); font-weight: 600; font-size: 12px; color: var(--muted); padding: 6px 12px; }
+tr.past td { color: var(--faint); }
+td.nowrap { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.coh { font-size: 11px; padding: 1px 6px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line); white-space: nowrap; }
+
+/* ---------- Changements ---------- */
+.chg { display: grid; grid-template-columns: 105px 1fr; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+.chg:last-child { border-bottom: 0; }
+.kind { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 2px 8px; border-radius: 6px; align-self: start; text-align: center; }
+.kind.ajout { background: var(--ok-soft); color: var(--ok); }
+.kind.modif { background: var(--warn-soft); color: var(--warn); }
+.kind.suppression { background: var(--bad-soft); color: var(--bad); }
+.chg del { color: var(--bad); }
+.chg ins { color: var(--ok); text-decoration: none; font-weight: 600; }
+h2.section { font-size: 14px; margin: 22px 0 8px; color: var(--muted); font-weight: 600; }
+
+/* ---------- Divers ---------- */
+.tip { position: fixed; z-index: 100; pointer-events: none; background: var(--text); color: var(--bg); font-size: 12px;
+  padding: 7px 9px; border-radius: 8px; max-width: 280px; line-height: 1.4; display: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+footer { color: var(--faint); font-size: 12px; text-align: center; padding: 10px 0 30px; }
+
+@media (max-width: 760px) {
+  input[type=search] { width: 100%; }
+  .top .me { flex: 1; white-space: nowrap; }
+  .top .search { flex-basis: 100%; order: 5; }
+  .grp { grid-template-columns: 1fr; }
+  .grp-info { border-right: 0; border-bottom: 1px solid var(--line); }
+  .track, .axis, .grid-lines { margin-left: 86px; }
+  .grid-lines { left: 86px; }
+  .mcell { min-height: 64px; }
+  .mcell .chips .prof { font-size: 0; width: 10px; height: 10px; padding: 0; border-radius: 50%;
+    background: hsl(var(--h) 60% var(--ev-border-l)); }
+  .chg { grid-template-columns: 1fr; gap: 6px; }
+}
+@media print {
+  header nav, .toolbar, .icon-btn, .more, footer { display: none !important; }
+  header { position: static; }
+  body { background: #fff; }
+  .card { box-shadow: none; break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <span style="font-size:24px">🚗</span>
+        <div>
+          <h1>Voiture de service — Tallard</h1>
+          <div class="sub" id="maj"></div>
+        </div>
+      </div>
+      <label class="me">Je suis
+        <select id="meSelect"><option value="">— choisir —</option></select>
+      </label>
+      <div class="search"><input type="search" id="search" placeholder="Filtrer (nom, cours, salle…)"></div>
+      <button class="icon-btn" id="themeBtn" title="Thème clair / sombre">🌓</button>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button data-view="covoit" role="tab">🚗 Covoiturage</button>
+      <button data-view="semaine" role="tab">📅 Semaine</button>
+      <button data-view="mois" role="tab">🗓️ Mois</button>
+      <button data-view="liste" role="tab">📋 Liste</button>
+      <button data-view="changes" role="tab">🔔 Changements<span class="badge" id="chgBadge" hidden></span></button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+<footer class="wrap">Généré depuis ADE · 🤝 = même jour d'aller et même jour de retour : covoiturage possible, à vous de vous organiser.</footer>
+
+<div class="tip" id="tip"></div>
+
+<script>
+const DATA = {"maj": "2026-11-14T14:13+01:00", "profs": ["ATTAFI", "CORNUEAU", "GUEUDRE", "VALLEE", "SANCHEZ", "CHAVES-JACOB", "AMADEI", "MAZOYER", "RAYNAL", "MOYSAN"], "cohortes": ["LP MIA", "BUT 3 SNRV", "M1 MPAD", "M2 MPAD"], "cours": [{"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363738302d312d30", "date": "2026-09-08", "debut": "08:30", "fin": "12:30", "cohortes": ["M2 MPAD"], "titre": "Soutenances finales et conseil de perf M2 P1", "salle": "", "profs": ["CORNUEAU"], "modifie_ade": "2026-08-27"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d39323932322d302d30", "date": "2026-09-21", "debut": "13:45", "fin": "17:15", "cohortes": ["LP MIA"], "titre": "S6 - Management de projet entreprise - CM", "salle": "Amphi Polyaéro", "profs": ["MOYSAN"], "modifie_ade": "2026-11-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732322d302d30", "date": "2026-09-22", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S6 - CND - Moysan - CM", "salle": "Amphi Polyaéro", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d352d30", "date": "2026-09-22", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD1", "salle": "SALLE TD-BLOCH", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d35", "date": "2026-09-22", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD2", "salle": "SALLE TD-BLOCH", "profs": ["MOYSAN"], "modifie_ade": "2026-09-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d322d30", "date": "2026-09-23", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - CM", "salle": "Amphi Polyaéro", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d312d30", "date": "2026-09-23", "debut": "10:30", "fin": "12:30", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - CM", "salle": "Amphi Polyaéro", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d332d30", "date": "2026-09-23", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD1", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d332d30", "date": "2026-09-23", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD2", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-09-21"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d34353635342d312d30", "date": "2026-09-28", "debut": "13:45", "fin": "15:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add MOY CM", "salle": "SALLE TD-PITOT", "profs": ["MOYSAN"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132313538322d302d30", "date": "2026-09-29", "debut": "09:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction Hydrau - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638362d342d30", "date": "2026-09-29", "debut": "10:30", "fin": "12:30", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - CM", "salle": "Amphi Polyaéro", "profs": ["AMADEI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638372d302d33", "date": "2026-09-29", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - TD1", "salle": "SALLE TD-BLOCH", "profs": ["AMADEI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638382d302d32", "date": "2026-09-29", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - TD2", "salle": "SALLE TD-BLOCH", "profs": ["AMADEI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638382d302d33", "date": "2026-09-30", "debut": "08:00", "fin": "10:00", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - TD2", "salle": "SALLE TD-VINCI", "profs": ["AMADEI"], "modifie_ade": "2026-09-19"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d352d30", "date": "2026-09-30", "debut": "08:00", "fin": "10:00", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD1", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-09-19"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638372d302d31", "date": "2026-09-30", "debut": "10:00", "fin": "12:00", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - TD1", "salle": "SALLE TD-VINCI", "profs": ["AMADEI"], "modifie_ade": "2026-09-19"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d352d30", "date": "2026-09-30", "debut": "10:00", "fin": "12:00", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD2", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-09-25"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638382d302d31", "date": "2026-09-30", "debut": "13:15", "fin": "15:15", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - TD2", "salle": "SALLE TD-BLOCH", "profs": ["AMADEI"], "modifie_ade": "2026-09-29"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37333638372d302d32", "date": "2026-09-30", "debut": "15:15", "fin": "17:15", "cohortes": ["LP MIA"], "titre": "S5 - Anglais - TD1", "salle": "SALLE TD-BLOCH", "profs": ["AMADEI"], "modifie_ade": "2026-09-29"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d33", "date": "2026-10-01", "debut": "08:30", "fin": "09:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d34", "date": "2026-10-01", "debut": "09:30", "fin": "10:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d35", "date": "2026-10-01", "debut": "10:30", "fin": "11:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d36", "date": "2026-10-01", "debut": "11:30", "fin": "12:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d30", "date": "2026-10-01", "debut": "13:45", "fin": "14:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d302d30", "date": "2026-10-01", "debut": "13:45", "fin": "15:45", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d31", "date": "2026-10-01", "debut": "14:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132313538322d302d31", "date": "2026-10-01", "debut": "15:45", "fin": "16:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction Hydrau - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d322d30", "date": "2026-10-01", "debut": "15:45", "fin": "17:45", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d30", "date": "2026-10-05", "debut": "09:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - Cours", "salle": "SALLE TD-VINCI", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d34", "date": "2026-10-05", "debut": "10:30", "fin": "12:30", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD2", "salle": "SALLE TD-BLOCH", "profs": ["MOYSAN"], "modifie_ade": "2026-09-29"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d30", "date": "2026-10-05", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-VINCI", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d342d30", "date": "2026-10-05", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD1", "salle": "SALLE TD-BLOCH", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d31", "date": "2026-10-05", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-VINCI", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d302d30", "date": "2026-10-05", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - CM", "salle": "Amphi Polyaéro", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232393432352d302d30", "date": "2026-10-05", "debut": "17:45", "fin": "19:15", "cohortes": ["LP MIA"], "titre": "Soutien Maths", "salle": "", "profs": ["ATTAFI"], "modifie_ade": "2026-09-30"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d35", "date": "2026-10-06", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-02"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37373334342d302d30", "date": "2026-10-06", "debut": "15:45", "fin": "17:15", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction Hydrau - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-02"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139303734372d302d30", "date": "2026-10-07", "debut": "08:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.08 OPI TP serious game", "salle": "SALLE TD-VINCI", "profs": ["SANCHEZ"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139303734372d312d30", "date": "2026-10-07", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.08 OPI TP serious game", "salle": "SALLE TD-VINCI", "profs": ["SANCHEZ"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323735352d312d30", "date": "2026-10-07", "debut": "15:45", "fin": "16:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.08 OPI - Cours", "salle": "SALLE TD-VINCI", "profs": ["SANCHEZ"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323735352d312d31", "date": "2026-10-07", "debut": "16:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.08 OPI - Cours", "salle": "SALLE TD-VINCI", "profs": ["SANCHEZ"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37373334342d312d30", "date": "2026-10-09", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction Hydrau - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-02"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232333235392d302d30", "date": "2026-10-09", "debut": "08:30", "fin": "10:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add VAL CM", "salle": "SALLE TD-PITOT", "profs": ["VALLEE"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d30", "date": "2026-10-09", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232333235392d312d30", "date": "2026-10-09", "debut": "10:30", "fin": "12:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add VAL CM", "salle": "SALLE TD-PITOT", "profs": ["VALLEE"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d33", "date": "2026-10-12", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD2", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-05"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d342d30", "date": "2026-10-12", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD1", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-10-05"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d332d30", "date": "2026-10-12", "debut": "10:30", "fin": "12:30", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD1", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d32", "date": "2026-10-12", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD2", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d322d30", "date": "2026-10-12", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD1", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d34353635342d322d30", "date": "2026-10-13", "debut": "08:30", "fin": "10:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add MOY CM", "salle": "SALLE TD-PITOT", "profs": ["MOYSAN"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232333235332d312d30", "date": "2026-10-13", "debut": "10:30", "fin": "12:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add  MOY TD", "salle": "SALLE TD-PITOT", "profs": ["MOYSAN"], "modifie_ade": "2026-10-02"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d37", "date": "2026-10-13", "debut": "13:45", "fin": "14:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d32", "date": "2026-10-13", "debut": "14:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37373334342d322d30", "date": "2026-10-13", "debut": "15:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction Hydrau - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383036382d332d30", "date": "2026-11-17", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - CM", "salle": "Amphi Polyaéro", "profs": ["ATTAFI"], "modifie_ade": "2026-11-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d39323932322d362d30", "date": "2026-11-20", "debut": "10:30", "fin": "11:00", "cohortes": ["LP MIA"], "titre": "S6 - Management de projet entreprise - CM", "salle": "Amphi Polyaéro", "profs": ["MOYSAN"], "modifie_ade": "2026-11-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3233343930352d302d30", "date": "2026-11-20", "debut": "11:00", "fin": "11:30", "cohortes": ["LP MIA"], "titre": "RDV AEROTECH", "salle": "", "profs": ["MOYSAN"], "modifie_ade": "2026-11-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393538352d302d30", "date": "2026-11-25", "debut": "08:30", "fin": "09:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - Cours _ SNRV", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393538352d302d31", "date": "2026-11-25", "debut": "09:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - Cours _ SNRV", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d32", "date": "2026-11-25", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d31", "date": "2026-11-25", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-02"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393530372d302d30", "date": "2026-11-25", "debut": "15:45", "fin": "17:15", "cohortes": ["BUT 3 SNRV"], "titre": "R5.06 Production - Test", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-10-20"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323632382d302d30", "date": "2026-11-26", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.07 Métrologie - Cours", "salle": "SALLE TD-VINCI", "profs": ["RAYNAL"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633332d302d30", "date": "2026-11-26", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.07 Métrologie - TD", "salle": "SALLE TD-VINCI", "profs": ["RAYNAL"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633332d302d31", "date": "2026-11-26", "debut": "15:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.07 Métrologie - TD", "salle": "SALLE TD-VINCI", "profs": ["RAYNAL"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d32", "date": "2026-11-27", "debut": "08:30", "fin": "09:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - Cours", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "modifie_ade": "2026-10-14"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d31", "date": "2026-11-27", "debut": "09:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - Cours", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "modifie_ade": "2026-09-21"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d32", "date": "2026-11-27", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d33", "date": "2026-11-27", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d33", "date": "2026-12-01", "debut": "09:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d33", "date": "2026-12-01", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d35", "date": "2026-12-01", "debut": "13:45", "fin": "14:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d36", "date": "2026-12-01", "debut": "14:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d31", "date": "2026-12-01", "debut": "15:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d30", "date": "2026-12-02", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-09-23"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d31", "date": "2026-12-02", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343937352d302d32", "date": "2026-12-03", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TPA1", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343937352d302d31", "date": "2026-12-03", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TPA1", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d312d30", "date": "2026-12-03", "debut": "13:45", "fin": "14:45", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d362d30", "date": "2026-12-03", "debut": "14:45", "fin": "15:45", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d332d30", "date": "2026-12-03", "debut": "15:45", "fin": "17:45", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d34", "date": "2026-12-07", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132313539302d302d30", "date": "2026-12-08", "debut": "10:30", "fin": "11:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction Hydrau - Test", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334382d302d34", "date": "2026-12-08", "debut": "11:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d31", "date": "2026-12-09", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD2", "salle": "salle INFO-BLAISE PASCAL", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d32", "date": "2026-12-09", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d312d30", "date": "2026-12-09", "debut": "10:30", "fin": "12:30", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD1", "salle": "salle TD-BREGUET", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393630372d302d33", "date": "2026-12-09", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732382d302d30", "date": "2026-12-09", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD2", "salle": "salle INFO-BLAISE PASCAL", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37323732312d312d30", "date": "2026-12-09", "debut": "13:45", "fin": "15:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add VAL TD", "salle": "SALLE TD-PITOT", "profs": ["VALLEE"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3138333732342d302d30", "date": "2026-12-09", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S6 - CND - TD1", "salle": "salle TD-BREGUET", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d37323732312d302d30", "date": "2026-12-09", "debut": "15:45", "fin": "17:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 2.32 - Mat. Fab Add VAL TD", "salle": "SALLE TD-PITOT", "profs": ["VALLEE"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343937352d302d30", "date": "2026-12-10", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TPA1", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d30", "date": "2026-12-10", "debut": "08:30", "fin": "09:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-03"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d33", "date": "2026-12-10", "debut": "09:30", "fin": "10:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais TD", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-03"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d34", "date": "2026-12-10", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d35", "date": "2026-12-10", "debut": "10:30", "fin": "11:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais TD", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-03"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d31", "date": "2026-12-10", "debut": "11:30", "fin": "12:30", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-03"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633392d302d30", "date": "2026-12-11", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.07 Métrologie - TP", "salle": "SALLE INFO-ST EXUPERY", "profs": ["RAYNAL"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132323633392d302d31", "date": "2026-12-11", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.07 Métrologie - TP", "salle": "SALLE INFO-ST EXUPERY", "profs": ["RAYNAL"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d322d30", "date": "2026-12-17", "debut": "08:30", "fin": "10:30", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD1", "salle": "salle TD-BREGUET", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d342d30", "date": "2026-12-17", "debut": "10:30", "fin": "12:30", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD2", "salle": "salle TD-BREGUET", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037332d312d30", "date": "2026-12-17", "debut": "13:45", "fin": "15:45", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD1", "salle": "salle TD-BREGUET", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d31", "date": "2026-12-17", "debut": "13:45", "fin": "14:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais TD", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38383037342d322d30", "date": "2026-12-17", "debut": "15:45", "fin": "17:45", "cohortes": ["LP MIA"], "titre": "S5 - Mathématiques générales - TD2", "salle": "salle TD-BREGUET", "profs": ["ATTAFI"], "modifie_ade": "2026-09-17"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730352d302d32", "date": "2026-12-17", "debut": "18:00", "fin": "19:00", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais CM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d34", "date": "2026-12-17", "debut": "19:00", "fin": "20:00", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais TD", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-10-06"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393831352d302d33", "date": "2027-01-11", "debut": "09:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - Cours", "salle": "SALLE TD-PITOT", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d34", "date": "2027-01-11", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-PITOT", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d37", "date": "2027-01-11", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-PITOT", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d35", "date": "2027-01-11", "debut": "15:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-10-14"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d36", "date": "2027-01-12", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334342d302d37", "date": "2027-01-12", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36363334352d302d30", "date": "2027-01-12", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.02 DDS - Test", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383731342d302d30", "date": "2027-01-13", "debut": "08:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - TP", "salle": "SALLE TD-CARNOT", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383731342d302d31", "date": "2027-01-13", "debut": "13:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - TP", "salle": "SALLE TD-CARNOT", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237342d302d30", "date": "2027-01-14", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "C R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383735342d302d30", "date": "2027-01-14", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "TD R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d30", "date": "2027-01-14", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d34", "date": "2027-01-14", "debut": "15:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383735342d302d32", "date": "2027-01-20", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "TD R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d36383735342d302d31", "date": "2027-01-20", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "TD R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393737302d302d30", "date": "2027-01-20", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.03 SDM - Test", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "modifie_ade": "2026-09-08"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d30", "date": "2027-01-21", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d31", "date": "2027-01-21", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-07-24"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d32", "date": "2027-01-21", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-21"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132303036352d302d30", "date": "2027-01-25", "debut": "15:45", "fin": "16:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.05 Construction TPM - Test", "salle": "SALLE TD-BLOCH", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237392d302d30", "date": "2027-01-26", "debut": "08:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "TP R5.A.13.2 SNRV Sim Physique", "salle": "salle INFO-BLAISE PASCAL", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237392d302d32", "date": "2027-01-26", "debut": "13:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "TP R5.A.13.2 SNRV Sim Physique", "salle": "salle INFO-BLAISE PASCAL", "profs": ["VALLEE"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d352d30", "date": "2027-01-27", "debut": "10:00", "fin": "10:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393836352d302d36", "date": "2027-01-27", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - TD", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "modifie_ade": "2026-10-14"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d38333533322d342d30", "date": "2027-01-27", "debut": "10:30", "fin": "11:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3134323735302d302d30", "date": "2027-01-27", "debut": "11:30", "fin": "12:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,13 - Anglais EXAM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393237392d302d31", "date": "2027-01-28", "debut": "13:45", "fin": "17:45", "cohortes": ["BUT 3 SNRV"], "titre": "TP R5.A.13.2 SNRV Sim Physique", "salle": "salle INFO-BLAISE PASCAL", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132343934332d302d33", "date": "2027-01-29", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-21"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d30", "date": "2027-01-29", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-18"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d34", "date": "2027-01-29", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-21"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d33", "date": "2027-01-30", "debut": "07:15", "fin": "09:15", "cohortes": ["BUT 3 SNRV"], "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3135363535352d302d32", "date": "2027-01-30", "debut": "09:15", "fin": "11:15", "cohortes": ["BUT 3 SNRV"], "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3131393837362d302d30", "date": "2027-02-01", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "R5.04 Math - Test", "salle": "SALLE TD-VINCI", "profs": ["ATTAFI"], "modifie_ade": "2026-07-16"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d31", "date": "2027-02-01", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-18"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3132353033392d302d30", "date": "2027-02-01", "debut": "13:45", "fin": "15:45", "cohortes": ["BUT 3 SNRV"], "titre": "R5.11 Anglais - Test", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-28"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d32", "date": "2027-02-02", "debut": "13:45", "fin": "14:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais TD", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-15"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333730362d302d30", "date": "2027-02-02", "debut": "14:45", "fin": "15:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais TD", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-15"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d33333732312d302d30", "date": "2027-02-02", "debut": "15:45", "fin": "16:45", "cohortes": ["M2 MPAD"], "titre": "ECUE 4.32 - Anglais EXAM", "salle": "", "profs": ["AMADEI"], "modifie_ade": "2026-09-22"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d302d30", "date": "2027-02-09", "debut": "08:30", "fin": "10:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d322d30", "date": "2027-02-09", "debut": "10:30", "fin": "12:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d32", "date": "2027-03-15", "debut": "08:30", "fin": "10:30", "cohortes": ["BUT 3 SNRV"], "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-18"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3232323031332d302d33", "date": "2027-03-15", "debut": "10:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-18"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3235313736352d302d30", "date": "2027-03-17", "debut": "09:30", "fin": "12:30", "cohortes": ["BUT 3 SNRV"], "titre": "Test Toiec", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "modifie_ade": "2026-09-18"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d322d30", "date": "2027-04-06", "debut": "08:30", "fin": "10:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais TD", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d342d30", "date": "2027-04-06", "debut": "10:30", "fin": "11:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d332d30", "date": "2027-04-06", "debut": "11:30", "fin": "12:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d302d30", "date": "2027-06-01", "debut": "08:30", "fin": "10:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais TD", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363236312d312d30", "date": "2027-06-01", "debut": "10:30", "fin": "11:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais CM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d312d30", "date": "2027-06-01", "debut": "11:30", "fin": "12:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais TD", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3235323235392d302d30", "date": "2027-06-14", "debut": "12:30", "fin": "16:30", "cohortes": ["M2 MPAD"], "titre": "Le Bourget M2", "salle": "", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3235323235392d302d32", "date": "2027-06-15", "debut": "09:00", "fin": "13:00", "cohortes": ["M2 MPAD"], "titre": "Le Bourget M2", "salle": "", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363239352d332d30", "date": "2027-06-15", "debut": "10:30", "fin": "11:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais TD", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d3139363237312d302d30", "date": "2027-06-15", "debut": "11:30", "fin": "12:30", "cohortes": ["M1 MPAD"], "titre": "ECUE 4,23 - Anglais EXAM", "salle": "SALLE TD-ADER", "profs": ["AMADEI"], "modifie_ade": "2026-08-26"}, {"uid": "ADE60506c616e6e696e67556e69766572736974e9323032365f323032372d39343633322d302d33", "date": "2027-06-16", "debut": "13:00", "fin": "17:00", "cohortes": ["M1 MPAD"], "titre": "Le Bourget M1", "salle": "", "profs": ["MOYSAN"], "modifie_ade": "2026-11-09"}], "changelog": [{"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-01", "debut": "15:45", "fin": "17:45", "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-29", "debut": "13:45", "fin": "15:45", "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-28", "debut": "13:45", "fin": "17:45", "titre": "TP R5.A.13.2 SNRV Sim Physique", "salle": "salle INFO-BLAISE PASCAL", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-12", "debut": "10:30", "fin": "12:30", "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-21", "debut": "13:45", "fin": "15:45", "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-29", "debut": "08:30", "fin": "10:30", "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-21", "debut": "08:30", "fin": "10:30", "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-03-15", "debut": "10:30", "fin": "12:30", "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-25", "debut": "09:30", "fin": "10:30", "titre": "R5.03 SDM - Cours _ SNRV", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-11", "debut": "09:30", "fin": "10:30", "titre": "R5.04 Math - Cours", "salle": "SALLE TD-PITOT", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-20", "debut": "10:30", "fin": "12:30", "titre": "TD R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-30", "debut": "09:15", "fin": "11:15", "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-29", "debut": "10:30", "fin": "12:30", "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-03-15", "debut": "08:30", "fin": "10:30", "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-11", "debut": "10:30", "fin": "12:30", "titre": "R5.04 Math - TD", "salle": "SALLE TD-PITOT", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-08", "debut": "11:30", "fin": "12:30", "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-01", "debut": "13:45", "fin": "14:45", "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-02-01", "debut": "13:45", "fin": "15:45", "titre": "R5.11 Anglais - Test", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-11", "debut": "15:45", "fin": "17:45", "titre": "R5.04 Math - TD", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-27", "debut": "13:45", "fin": "15:45", "titre": "R5.04 Math - TD", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-14", "debut": "13:45", "fin": "15:45", "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-11", "debut": "13:45", "fin": "15:45", "titre": "R5.04 Math - TD", "salle": "SALLE TD-PITOT", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-13", "debut": "13:45", "fin": "17:45", "titre": "R5.03 SDM - TP", "salle": "SALLE TD-CARNOT", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-03", "debut": "10:30", "fin": "12:30", "titre": "R5.11 Anglais - TPA1", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-10", "debut": "10:30", "fin": "12:30", "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-01", "debut": "14:45", "fin": "15:45", "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-12", "debut": "08:30", "fin": "10:30", "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-13", "debut": "08:30", "fin": "12:30", "titre": "R5.03 SDM - TP", "salle": "SALLE TD-CARNOT", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-26", "debut": "15:45", "fin": "17:45", "titre": "R5.07 Métrologie - TD", "salle": "SALLE TD-VINCI", "profs": ["RAYNAL"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-27", "debut": "08:30", "fin": "09:30", "titre": "R5.04 Math - Cours", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-25", "debut": "15:45", "fin": "16:45", "titre": "R5.05 Construction TPM - Test", "salle": "SALLE TD-BLOCH", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-14", "debut": "15:45", "fin": "17:45", "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-02", "debut": "10:30", "fin": "12:30", "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-27", "debut": "10:30", "fin": "12:30", "titre": "R5.04 Math - TD", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-20", "debut": "08:30", "fin": "10:30", "titre": "TD R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-25", "debut": "10:30", "fin": "12:30", "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-02-01", "debut": "08:30", "fin": "10:30", "titre": "R5.04 Math - Test", "salle": "SALLE TD-VINCI", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-26", "debut": "08:30", "fin": "12:30", "titre": "TP R5.A.13.2 SNRV Sim Physique", "salle": "salle INFO-BLAISE PASCAL", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-08", "debut": "10:30", "fin": "11:30", "titre": "R5.05 Construction Hydrau - Test", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-09", "debut": "08:30", "fin": "10:30", "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-03", "debut": "08:30", "fin": "10:30", "titre": "R5.11 Anglais - TPA1", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-02", "debut": "08:30", "fin": "10:30", "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-03-17", "debut": "09:30", "fin": "12:30", "titre": "Test Toiec", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-01", "debut": "10:30", "fin": "12:30", "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-21", "debut": "10:30", "fin": "12:30", "titre": "R5.11 Anglais - TD", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-11", "debut": "10:30", "fin": "12:30", "titre": "R5.07 Métrologie - TP", "salle": "SALLE INFO-ST EXUPERY", "profs": ["RAYNAL"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-09", "debut": "10:30", "fin": "12:30", "titre": "R5.03 SDM - TD", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-11", "debut": "08:30", "fin": "10:30", "titre": "R5.07 Métrologie - TP", "salle": "SALLE INFO-ST EXUPERY", "profs": ["RAYNAL"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-26", "debut": "10:30", "fin": "12:30", "titre": "R5.07 Métrologie - Cours", "salle": "SALLE TD-VINCI", "profs": ["RAYNAL"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-07", "debut": "13:45", "fin": "15:45", "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-14", "debut": "10:30", "fin": "12:30", "titre": "TD R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-27", "debut": "09:30", "fin": "10:30", "titre": "R5.04 Math - Cours", "salle": "SALLE TD-ADER", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-01", "debut": "09:30", "fin": "10:30", "titre": "R5.02 DDS - Cours", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-25", "debut": "08:30", "fin": "09:30", "titre": "R5.03 SDM - Cours _ SNRV", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-14", "debut": "08:30", "fin": "10:30", "titre": "C R5.A.13.2 SNRV Sim Physique", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-20", "debut": "13:45", "fin": "15:45", "titre": "R5.03 SDM - Test", "salle": "SALLE TD-VINCI", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-25", "debut": "13:45", "fin": "15:45", "titre": "R5.02 DDS - TD", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-12-10", "debut": "08:30", "fin": "10:30", "titre": "R5.11 Anglais - TPA1", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-26", "debut": "13:45", "fin": "17:45", "titre": "TP R5.A.13.2 SNRV Sim Physique", "salle": "salle INFO-BLAISE PASCAL", "profs": ["VALLEE"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-02-01", "debut": "10:30", "fin": "12:30", "titre": "Préparation au TOEIC", "salle": "SALLE TD-VINCI", "profs": ["MAZOYER"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-27", "debut": "10:30", "fin": "12:30", "titre": "R5.04 Math - TD", "salle": "SALLE TD-BLOCH", "profs": ["ATTAFI"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-30", "debut": "07:15", "fin": "09:15", "titre": "Portfolio", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-26", "debut": "13:45", "fin": "15:45", "titre": "R5.07 Métrologie - TD", "salle": "SALLE TD-VINCI", "profs": ["RAYNAL"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2026-11-25", "debut": "15:45", "fin": "17:15", "titre": "R5.06 Production - Test", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}, {"type": "ajout", "quand": "2026-11-14T14:13+01:00", "apres": {"date": "2027-01-12", "debut": "13:45", "fin": "15:45", "titre": "R5.02 DDS - Test", "salle": "SALLE TD-VINCI", "profs": ["MOYSAN"], "cohortes": ["BUT 3 SNRV"]}}]};
+
+// ============================================================ Utilitaires
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const toMin = hhmm => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
+const fmtMin = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+const parseISO = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const toISO = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+const monday = d => { const r = new Date(d.getFullYear(), d.getMonth(), d.getDate()); const w = r.getDay();
+  return addDays(r, w === 0 ? 1 : w === 6 ? 2 : 1 - w); };
+const fmtLong = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+const fmtShort = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short" });
+const fmtMonth = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" });
+const store = {
+  get(k, def) { try { const v = localStorage.getItem("tallard." + k); return v === null ? def : JSON.parse(v); } catch { return def; } },
+  set(k, v) { try { localStorage.setItem("tallard." + k, JSON.stringify(v)); } catch {} },
+};
+const TODAY = toISO(new Date());
+
+// Une teinte stable par enseignant
+const HUES = [212, 150, 28, 275, 345, 188, 95, 8, 245, 52];
+const hueOf = p => HUES[Math.max(0, DATA.profs.indexOf(p)) % HUES.length];
+const label = p => p.charAt(0) + p.slice(1).toLowerCase();
+const profChip = p => `<span class="prof${p === state.me ? " is-me" : ""}" style="--h:${hueOf(p)}">${esc(label(p))}</span>`;
+
+// ============================================================ État
+const COURS = DATA.cours.map(c => ({ ...c, s: toMin(c.debut), e: toMin(c.fin) }));
+const state = {
+  view: "covoit",
+  me: store.get("me", ""),
+  q: "",
+  week: monday(new Date()),
+  month: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  onlyMine: store.get("onlyMine", false),
+  showPast: false,
+  daysShown: 10,
+  focusDate: null,
+};
+
+function matches(c) {
+  if (!state.q) return true;
+  const t = `${c.profs.join(" ")} ${c.titre} ${c.salle} ${c.cohortes.join(" ")} ${c.date}`.toLowerCase();
+  return state.q.split(/\s+/).every(w => t.includes(w));
+}
+const filtered = () => COURS.filter(matches);
+
+// ============================================================ Séjours & covoiturage
+// Un séjour = jours consécutifs d'un même enseignant à Tallard (il dort sur
+// place entre les deux). Covoiturage possible = même jour d'aller ET même
+// jour de retour. On n'anticipe rien d'autre : à chacun de s'organiser.
+const SEJOURS = (() => {
+  const parProf = new Map();
+  for (const c of COURS) for (const p of c.profs) {
+    if (!parProf.has(p)) parProf.set(p, new Map());
+    const j = parProf.get(p);
+    if (!j.has(c.date)) j.set(c.date, []);
+    j.get(c.date).push(c);
+  }
+  const sejours = [];
+  for (const [prof, jours] of parProf) {
+    let cur = null;
+    for (const d of [...jours.keys()].sort()) {
+      const cs = jours.get(d).sort((a, b) => a.s - b.s);
+      const jour = { date: d, cours: cs, s: cs[0].s, e: Math.max(...cs.map(c => c.e)) };
+      if (cur && toISO(addDays(parseISO(cur.fin), 1)) === d) { cur.jours.push(jour); cur.fin = d; }
+      else { cur = { prof, debut: d, fin: d, jours: [jour] }; sejours.push(cur); }
+    }
+  }
+  const parCle = new Map();
+  for (const s of sejours) {
+    s.cle = s.debut + "|" + s.fin;
+    if (!parCle.has(s.cle)) parCle.set(s.cle, []);
+    parCle.get(s.cle).push(s);
+  }
+  for (const s of sejours) s.avec = parCle.get(s.cle).filter(x => x !== s);
+  return sejours;
+})();
+
+// date -> séjours présents ce jour-là
+const SEJOURS_PAR_JOUR = new Map();
+for (const s of SEJOURS) for (const j of s.jours) {
+  if (!SEJOURS_PAR_JOUR.has(j.date)) SEJOURS_PAR_JOUR.set(j.date, []);
+  SEJOURS_PAR_JOUR.get(j.date).push(s);
+}
+const jourDe = (s, d) => s.jours.find(j => j.date === d);
+const covoitCeJour = d => (SEJOURS_PAR_JOUR.get(d) || []).some(s => s.avec.length);
+const fmtPeriode = s => s.debut === s.fin ? "Aller-retour dans la journée"
+  : `Séjour du ${fmtShort.format(parseISO(s.debut))} au ${fmtShort.format(parseISO(s.fin))} · dort sur place`;
+
+function joursAvecCours(cours) {
+  const m = new Map();
+  for (const c of cours) { if (!m.has(c.date)) m.set(c.date, []); m.get(c.date).push(c); }
+  return m;
+}
+
+function renderCovoit() {
+  const parJour = joursAvecCours(filtered());
+  let dates = [...parJour.keys()].filter(d => d >= TODAY).sort();
+  if (state.onlyMine && state.me) dates = dates.filter(d => parJour.get(d).some(c => c.profs.includes(state.me)));
+  if (state.focusDate && !dates.includes(state.focusDate) && parJour.has(state.focusDate)) dates = [state.focusDate, ...dates];
+  dates = dates.slice(0, Math.max(state.daysShown, dates.indexOf(state.focusDate) + 1));
+
+  // Échelle horaire commune à tous les jours affichés
+  const shown = dates.flatMap(d => parJour.get(d));
+  const lo = Math.min(8 * 60, ...shown.map(c => Math.floor(c.s / 60) * 60));
+  const hi = Math.max(18 * 60, ...shown.map(c => Math.ceil(c.e / 60) * 60));
+  const pct = m => ((m - lo) / (hi - lo) * 100).toFixed(3) + "%";
+  const w = (a, b) => ((b - a) / (hi - lo) * 100).toFixed(3) + "%";
+  const ticks = []; for (let h = lo; h <= hi; h += 60) ticks.push(h);
+  const axis = `<div class="axis">${ticks.map(t => `<span style="left:${pct(t)}">${t / 60}h</span>`).join("")}</div>`;
+  const gridLines = `<div class="grid-lines">${ticks.map(t => `<i style="left:${pct(t)}"></i>`).join("")}</div>`;
+
+  let html = "";
+
+  // Mes prochains séjours
+  if (state.me) {
+    const mine = SEJOURS.filter(s => s.prof === state.me && s.fin >= TODAY).sort((a, b) => a.debut.localeCompare(b.debut)).slice(0, 4);
+    html += `<div class="toolbar"><strong>Mes prochains déplacements</strong><span class="spacer"></span>
+      <button class="btn" id="icsBtn">📅 Ajouter à mon agenda (.ics)</button></div>`;
+    html += mine.length ? `<div class="next">${mine.map(s => {
+      const last = s.jours[s.jours.length - 1];
+      return `<div class="card" data-goto="${s.debut}"><div class="d">${s.debut === s.fin ? fmtLong.format(parseISO(s.debut))
+          : `${fmtShort.format(parseISO(s.debut))} → ${fmtShort.format(parseISO(s.fin))}`}</div>
+        <div class="t">1er cours <b>${fmtMin(s.jours[0].s)}</b> · fin <b>${fmtMin(last.e)}</b>${s.jours.length > 1 ? ` · ${s.jours.length} jours` : ""}</div>
+        <div class="w">${s.avec.length ? "🤝 Covoit possible avec " + s.avec.map(x => profChip(x.prof)).join(" ") : "Pas de collègue sur les mêmes dates"}</div></div>`;
+    }).join("")}</div>` : `<p class="muted">Aucun déplacement à venir.</p>`;
+  }
+
+  html += `<div class="toolbar"><strong>Jours à venir</strong>
+    ${state.me ? `<label class="chk"><input type="checkbox" id="onlyMine" ${state.onlyMine ? "checked" : ""}> Seulement mes jours</label>` : ""}
+    <span class="spacer"></span><span class="small muted">🤝 = même jour d'aller et même jour de retour</span></div>`;
+
+  if (!dates.length) return html + `<div class="card empty">Aucun cours en présentiel à venir${state.q ? " pour ce filtre" : ""}.</div>`;
+
+  for (const d of dates) {
+    const visibles = new Set(parJour.get(d).flatMap(c => c.profs));
+    const sejours = (SEJOURS_PAR_JOUR.get(d) || []).filter(s => visibles.has(s.prof));
+    // Regroupe les séjours identiques (mêmes dates aller / retour)
+    const groupes = new Map();
+    for (const s of sejours) { if (!groupes.has(s.cle)) groupes.set(s.cle, []); groupes.get(s.cle).push(s); }
+    const liste = [...groupes.values()].sort((a, b) => b.length - a.length || jourDe(a[0], d).s - jourDe(b[0], d).s);
+    const possible = liste.some(g => g.length > 1);
+
+    html += `<section class="card day${d === TODAY ? " today" : ""}" id="day-${d}">
+      <div class="day-h"><h3>${fmtLong.format(parseISO(d))}</h3>
+        ${d === TODAY ? `<span class="tag today">Aujourd'hui</span>` : ""}
+        <span class="tag">${sejours.length} enseignant${sejours.length > 1 ? "s" : ""}</span>
+        ${possible ? `<span class="tag ok">🤝 Covoiturage possible</span>` : ""}</div>`;
+
+    for (const g of liste) {
+      g.sort((a, b) => jourDe(a, d).s - jourDe(b, d).s);
+      const s0 = g[0], ok = g.length > 1;
+      const idx = s0.jours.findIndex(j => j.date === d) + 1;
+      // Info factuelle : sur un aller-retour, l'un le matin et l'autre l'après-midi
+      const decale = ok && s0.debut === s0.fin && g.some(a => g.some(b => a !== b && (jourDe(a, d).e <= jourDe(b, d).s)));
+      html += `<div class="grp${ok ? " ok" : ""}">
+        <div class="grp-info">
+          <div class="n">${ok ? "🤝 Covoiturage possible" : g.length === 1 && sejours.length > 1 ? "Dates différentes" : "Seul·e"}</div>
+          <div class="per">${fmtPeriode(s0)}${s0.jours.length > 1 ? ` (jour ${idx}/${s0.jours.length})` : ""}</div>
+          ${g.map(s => `<div class="times">${esc(label(s.prof))} : ${fmtMin(jourDe(s, d).s)}–${fmtMin(jourDe(s, d).e)}</div>`).join("")}
+          ${decale ? `<div class="note">Horaires sans chevauchement ce jour-là</div>` : ""}
+        </div>
+        <div class="lanes">${gridLines}
+          ${g.map(s => `<div class="lane"><span class="lane-name">${profChip(s.prof)}</span><div class="track">
+            ${jourDe(s, d).cours.map(c => `<div class="seg course" style="--h:${hueOf(s.prof)};left:${pct(c.s)};width:${w(c.s, c.e)}"
+              data-tip="${esc(tipCours(c))}">${esc(c.cohortes.join(", "))}</div>`).join("")}
+          </div></div>`).join("")}
+          ${axis}
+        </div></div>`;
+    }
+    html += `</section>`;
+  }
+  const restants = [...parJour.keys()].filter(d => d >= TODAY).length - dates.length;
+  if (restants > 0 && !state.onlyMine) html += `<button class="btn more" id="moreDays">Afficher plus de jours (${restants} restants)</button>`;
+  return html;
+}
+
+function tipCours(c) {
+  return `${c.debut}–${c.fin} · ${c.cohortes.join(", ")}\n${c.titre}\n${c.profs.map(label).join(", ")}${c.salle ? "\n" + c.salle : ""}`;
+}
+
+// Export .ics : un évènement par séjour (du 1er cours du premier jour à la fin du dernier)
+function downloadICS() {
+  const me = state.me; if (!me) return;
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const dt = (d, m) => `${d.replace(/-/g, "")}T${fmtMin(m).replace(":", "")}00`;
+  const txt = s => s.replace(/[\\,;]/g, m => "\\" + m);
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//planning-tallard//FR", "CALSCALE:GREGORIAN", "X-WR-CALNAME:Tallard " + label(me)];
+  for (const s of SEJOURS) {
+    if (s.prof !== me || s.fin < TODAY) continue;
+    const last = s.jours[s.jours.length - 1];
+    const avec = s.avec.map(x => label(x.prof));
+    lines.push("BEGIN:VEVENT", `UID:tallard-${s.debut}-${me}@planning`, `DTSTAMP:${stamp}`,
+      `DTSTART;TZID=Europe/Paris:${dt(s.debut, s.jours[0].s)}`, `DTEND;TZID=Europe/Paris:${dt(s.fin, last.e)}`,
+      `SUMMARY:${txt(`Tallard${avec.length ? " (covoit possible : " + avec.join(", ") + ")" : ""}`)}`,
+      `DESCRIPTION:${s.jours.flatMap(j => j.cours.map(c => txt(`${j.date} ${c.debut}-${c.fin} ${c.titre} (${c.cohortes.join(", ")})`))).join("\\n")}`,
+      "END:VEVENT");
+  }
+  lines.push("END:VCALENDAR");
+  const a = Object.assign(document.createElement("a"), {
+    href: URL.createObjectURL(new Blob([lines.join("\r\n")], { type: "text/calendar" })),
+    download: `tallard-${me.toLowerCase()}.ics`,
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ============================================================ Semaine
+function renderSemaine() {
+  const days = [0, 1, 2, 3, 4].map(i => addDays(state.week, i));
+  const isos = days.map(toISO);
+  const evs = filtered().filter(c => c.date >= isos[0] && c.date <= isos[4]);
+  const lo = Math.min(8 * 60, ...evs.map(c => Math.floor(c.s / 60) * 60));
+  const hi = Math.max(18 * 60, ...evs.map(c => Math.ceil(c.e / 60) * 60));
+  const PX = 1.1; // px par minute
+  const H = (hi - lo) * PX;
+  const end = days[4];
+
+  let html = `<div class="toolbar">
+    <button class="btn" data-week="-1">◀</button><button class="btn" data-week="0">Cette semaine</button><button class="btn" data-week="1">▶</button>
+    <strong style="margin-left:6px">Semaine du ${days[0].getDate()} au ${fmtLong.format(end).replace(/^\S+ /, "")}</strong>
+    <span class="spacer"></span><div class="legend">${DATA.profs.filter(p => COURS.some(c => c.profs.includes(p))).map(profChip).join("")}</div></div>`;
+
+  html += `<div class="card week"><div class="week-head"><div></div>${days.map((d, i) => {
+    const n = new Set(evs.filter(c => c.date === isos[i]).flatMap(c => c.profs)).size;
+    return `<div class="${isos[i] === TODAY ? "today" : ""}">${fmtLong.format(d).split(" ")[0]}
+      <span class="date">${d.getDate()}/${d.getMonth() + 1}</span>
+      <span class="count">${n ? `${n} prof${n > 1 ? "s" : ""}${covoitCeJour(isos[i]) ? " · 🤝" : ""}` : "&nbsp;"}</span></div>`;
+  }).join("")}</div>`;
+
+  html += `<div class="week-body" style="height:${H}px">`;
+  html += `<div class="hours">${Array.from({ length: (hi - lo) / 60 + 1 }, (_, k) => lo + k * 60)
+    .map(m => `<span style="top:${(m - lo) * PX}px">${fmtMin(m)}</span>`).join("")}</div>`;
+  for (let m = lo; m <= hi; m += 30) html += `<div class="hline${m % 60 ? " half" : ""}" style="top:${(m - lo) * PX}px"></div>`;
+
+  isos.forEach(iso => {
+    const dayEvs = evs.filter(c => c.date === iso).sort((a, b) => a.s - b.s || b.e - a.e);
+    // Colonnes pour les cours qui se chevauchent, par groupe de chevauchement
+    const placed = []; let group = [], groupEnd = -1;
+    const flush = () => { const n = Math.max(...group.map(g => g.col)) + 1; group.forEach(g => g.n = n); group = []; };
+    for (const c of dayEvs) {
+      if (c.s >= groupEnd && group.length) flush();
+      const used = new Set(group.filter(g => g.c.e > c.s).map(g => g.col));
+      let col = 0; while (used.has(col)) col++;
+      const g = { c, col }; group.push(g); placed.push(g); groupEnd = Math.max(groupEnd, c.e);
+    }
+    if (group.length) flush();
+
+    let col = `<div class="wcol${iso === TODAY ? " today" : ""}">`;
+    if (iso === TODAY) {
+      const now = new Date(), nm = now.getHours() * 60 + now.getMinutes();
+      if (nm > lo && nm < hi) col += `<div class="now-line" style="top:${(nm - lo) * PX}px"></div>`;
+    }
+    for (const { c, col: k, n } of placed) {
+      const mine = state.me && c.profs.includes(state.me);
+      const h = (c.e - c.s) * PX;
+      col += `<div class="ev${mine ? " is-me" : ""}" style="--h:${hueOf(c.profs[0])};top:${(c.s - lo) * PX}px;height:${h - 2}px;
+        left:calc(${k / n * 100}% + 2px);width:calc(${100 / n}% - 4px)" data-tip="${esc(tipCours(c))}">
+        <b>${esc(c.profs.map(label).join(" + "))}</b>
+        ${h > 34 ? `<div class="x">${esc(c.cohortes.join(", "))}</div>` : ""}
+        ${h > 52 ? `<div class="x">${esc(c.titre)}</div>` : ""}
+        ${h > 70 ? `<div class="x">${c.debut}–${c.fin}</div>` : ""}</div>`;
+    }
+    html += col + `</div>`;
+  });
+  html += `</div></div>`;
+  if (!evs.length) html += `<p class="muted" style="text-align:center">Aucun déplacement cette semaine.</p>`;
+  return html;
+}
+
+// ============================================================ Mois
+function renderMois() {
+  const m0 = state.month;
+  let start = new Date(m0.getFullYear(), m0.getMonth(), 1);
+  start = addDays(start, -((start.getDay() + 6) % 7)); // lundi de la 1re semaine
+  const parJour = joursAvecCours(filtered());
+
+  let html = `<div class="toolbar">
+    <button class="btn" data-month="-1">◀</button><button class="btn" data-month="0">Ce mois-ci</button><button class="btn" data-month="1">▶</button>
+    <strong style="margin-left:6px;text-transform:capitalize">${fmtMonth.format(m0)}</strong>
+    <span class="spacer"></span><span class="small muted">🤝 covoiturage possible · ☾ dort sur place · cliquer un jour pour le détail</span></div>`;
+  html += `<div class="card month"><div class="mgrid">${["Lun", "Mar", "Mer", "Jeu", "Ven"].map(d => `<div class="dow">${d}</div>`).join("")}`;
+  for (let wk = 0; wk < 6; wk++) {
+    const wkStart = addDays(start, wk * 7);
+    if (wk > 0 && wkStart.getMonth() !== m0.getMonth()) break;
+    for (let i = 0; i < 5; i++) {
+      const d = addDays(wkStart, i), iso = toISO(d);
+      const cs = parJour.get(iso) || [];
+      const profs = [...new Set(cs.flatMap(c => c.profs))].sort();
+      // ☾ = dort sur place le soir (le séjour continue le lendemain)
+      const dort = new Set((SEJOURS_PAR_JOUR.get(iso) || []).filter(s => s.fin > iso).map(s => s.prof));
+      html += `<div class="mcell${d.getMonth() !== m0.getMonth() ? " out" : ""}${iso === TODAY ? " today" : ""}" data-goto="${cs.length ? iso : ""}">
+        <div class="num"><span>${d.getDate()}</span>${covoitCeJour(iso) && profs.length > 1 ? `<span class="cars" title="Covoiturage possible">🤝</span>` : ""}</div>
+        <div class="chips">${profs.map(p => dort.has(p) ? profChip(p).replace("</span>", ` <span class="moon">☾</span></span>`) : profChip(p)).join("")}</div></div>`;
+    }
+  }
+  return html + `</div></div>`;
+}
+
+// ============================================================ Liste
+function renderListe() {
+  const cs = filtered().filter(c => state.showPast || c.date >= TODAY);
+  const in7 = toISO(addDays(new Date(), 7));
+  const groupOf = c => c.date < TODAY ? "Passés" : c.date === TODAY ? "Aujourd'hui" : c.date <= in7 ? "7 prochains jours" : "Plus tard";
+  let html = `<div class="toolbar"><label class="chk"><input type="checkbox" id="showPast" ${state.showPast ? "checked" : ""}> Afficher les cours passés</label>
+    <span class="spacer"></span><span class="small muted">${cs.length} cours</span><button class="btn" id="csvBtn">⬇️ Export CSV (Excel)</button></div>`;
+  html += `<div class="card tbl-wrap"><table><thead><tr><th>Date</th><th>Horaire</th><th>Enseignant</th><th>Cohorte</th><th>Cours</th><th>Salle</th></tr></thead><tbody>`;
+  let g = null;
+  for (const c of cs) {
+    if (groupOf(c) !== g) { g = groupOf(c); html += `<tr class="sep"><td colspan="6">${g}</td></tr>`; }
+    html += `<tr class="${c.date < TODAY ? "past" : ""}"><td class="nowrap" style="text-transform:capitalize">${fmtShort.format(parseISO(c.date))}</td>
+      <td class="nowrap">${c.debut}–${c.fin}</td><td>${c.profs.map(profChip).join(" ")}</td>
+      <td>${c.cohortes.map(x => `<span class="coh">${esc(x)}</span>`).join(" ")}</td><td>${esc(c.titre)}</td><td>${esc(c.salle)}</td></tr>`;
+  }
+  return html + `</tbody></table>${cs.length ? "" : `<div class="empty">Aucun cours.</div>`}</div>`;
+}
+
+function downloadCSV() {
+  const cs = filtered().filter(c => state.showPast || c.date >= TODAY);
+  const q = v => `"${String(v).replace(/"/g, '""')}"`;
+  const rows = [["Date", "Début", "Fin", "Enseignant(s)", "Cohorte(s)", "Cours", "Salle"],
+    ...cs.map(c => [c.date.split("-").reverse().join("/"), c.debut, c.fin, c.profs.join(", "), c.cohortes.join(", "), c.titre, c.salle])];
+  const blob = new Blob(["\ufeff" + rows.map(r => r.map(q).join(";")).join("\r\n")], { type: "text/csv" });
+  const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "planning-tallard.csv" });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ============================================================ Changements
+function renderChanges() {
+  const log = DATA.changelog;
+  const desc = c => `<span style="text-transform:capitalize">${fmtShort.format(parseISO(c.date))}</span> ${c.debut}–${c.fin} · ${c.profs.map(profChip).join(" ")} · ${esc(c.cohortes.join(", "))} · ${esc(c.titre)}`;
+  const diff = (a, b) => {
+    const parts = [];
+    if (a.date !== b.date || a.debut !== b.debut || a.fin !== b.fin)
+      parts.push(`<del>${fmtShort.format(parseISO(a.date))} ${a.debut}–${a.fin}</del> → <ins>${fmtShort.format(parseISO(b.date))} ${b.debut}–${b.fin}</ins>`);
+    if (a.salle !== b.salle) parts.push(`Salle : <del>${esc(a.salle || "—")}</del> → <ins>${esc(b.salle || "—")}</ins>`);
+    if (a.profs.join() !== b.profs.join()) parts.push(`Enseignant : <del>${esc(a.profs.join(", "))}</del> → <ins>${esc(b.profs.join(", "))}</ins>`);
+    return parts.join("<br>");
+  };
+  let html = `<p class="muted">Différences détectées entre deux synchronisations ADE successives (cours à venir uniquement, 30 derniers jours).</p>`;
+  if (!log.length) html += `<div class="card empty">Aucun changement enregistré pour l'instant.<br><span class="small">L'historique se construit à chaque synchronisation.</span></div>`;
+  else {
+    let lastDay = null;
+    html += `<div class="card">`;
+    for (const e of log) {
+      const c = e.apres || e.avant;
+      if (!matches({ ...c, date: c.date })) continue;
+      const day = e.quand.slice(0, 10);
+      if (day !== lastDay) { lastDay = day; html += `<div class="chg" style="background:var(--surface-2);padding:6px 16px"><span></span><span class="small muted">Synchro du ${fmtLong.format(parseISO(day))}</span></div>`; }
+      html += `<div class="chg"><span class="kind ${e.type}">${{ ajout: "Ajout", modif: "Modifié", suppression: "Annulé" }[e.type]}</span>
+        <div>${desc(c)}${e.type === "modif" ? `<div class="small" style="margin-top:4px">${diff(e.avant, e.apres)}</div>` : ""}</div></div>`;
+    }
+    html += `</div>`;
+  }
+  // Complément : dates de modification déclarées par ADE
+  const lim = toISO(addDays(new Date(), -14));
+  const recents = filtered().filter(c => c.date >= TODAY && c.modifie_ade && c.modifie_ade >= lim)
+    .sort((a, b) => b.modifie_ade.localeCompare(a.modifie_ade));
+  html += `<h2 class="section">Modifiés dans ADE ces 14 derniers jours (${recents.length})</h2>`;
+  html += recents.length ? `<div class="card">${recents.map(c => `<div class="chg"><span class="small muted">le ${c.modifie_ade.split("-").reverse().slice(0, 2).join("/")}</span><div>${desc(c)}</div></div>`).join("")}</div>`
+    : `<div class="card empty">Rien de récent.</div>`;
+  return html;
+}
+
+// ============================================================ Rendu & évènements
+const VIEWS = { covoit: renderCovoit, semaine: renderSemaine, mois: renderMois, liste: renderListe, changes: renderChanges };
+
+function render() {
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === state.view));
+  $("#app").innerHTML = VIEWS[state.view]();
+  if (state.view === "covoit" && state.focusDate) {
+    const el = document.getElementById("day-" + state.focusDate);
+    if (el) window.scrollTo(0, el.getBoundingClientRect().top + scrollY - $("header").offsetHeight - 12);
+    state.focusDate = null;
+  }
+}
+
+function setView(v, push = true) {
+  state.view = VIEWS[v] ? v : "covoit";
+  if (push) { history.replaceState(null, "", "#" + state.view); window.scrollTo(0, 0); }
+  render();
+}
+
+function init() {
+  const maj = new Date(DATA.maj);
+  const ageH = (Date.now() - maj) / 36e5;
+  $("#maj").innerHTML = `Synchro ADE : ${maj.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}` +
+    (ageH > 48 ? ` · <span style="color:var(--warn)">⚠️ données de plus de ${Math.floor(ageH / 24)} jours</span>` : "");
+
+  const sel = $("#meSelect");
+  DATA.profs.forEach(p => sel.add(new Option(label(p), p)));
+  sel.value = state.me;
+  sel.onchange = () => { state.me = sel.value; store.set("me", state.me); render(); };
+
+  let t; $("#search").oninput = e => { clearTimeout(t); t = setTimeout(() => { state.q = e.target.value.toLowerCase().trim(); render(); }, 120); };
+  document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => setView(b.dataset.view));
+
+  const futureChanges = DATA.changelog.filter(e => (Date.now() - new Date(e.quand)) < 7 * 864e5).length;
+  if (futureChanges) { $("#chgBadge").textContent = futureChanges; $("#chgBadge").hidden = false; }
+
+  // Thème
+  const applyTheme = th => { if (th) document.documentElement.dataset.theme = th; else delete document.documentElement.dataset.theme; };
+  applyTheme(store.get("theme", "dark")); // sombre par défaut, le choix 🌓 est mémorisé
+  $("#themeBtn").onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const th = dark ? "light" : "dark"; store.set("theme", th); applyTheme(th);
+  };
+
+  // Délégation des clics dans la zone principale
+  $("#app").addEventListener("click", e => {
+    const el = e.target.closest("[data-goto],[data-week],[data-month],button,input");
+    if (!el) return;
+    if (el.dataset.goto) { state.focusDate = el.dataset.goto; setView("covoit"); return; }
+    if (el.dataset.week !== undefined) { const n = +el.dataset.week; state.week = n ? addDays(state.week, 7 * n) : monday(new Date()); return render(); }
+    if (el.dataset.month !== undefined) { const n = +el.dataset.month, m = state.month;
+      state.month = n ? new Date(m.getFullYear(), m.getMonth() + n, 1) : new Date(new Date().getFullYear(), new Date().getMonth(), 1); return render(); }
+    switch (el.id) {
+      case "onlyMine": state.onlyMine = el.checked; store.set("onlyMine", el.checked); return render();
+      case "showPast": state.showPast = el.checked; return render();
+      case "moreDays": state.daysShown += 10; return render();
+      case "icsBtn": return downloadICS();
+      case "csvBtn": return downloadCSV();
+    }
+  });
+
+  // Info-bulles
+  const tip = $("#tip");
+  document.addEventListener("mouseover", e => {
+    const el = e.target.closest("[data-tip]");
+    if (!el) { tip.style.display = "none"; return; }
+    tip.textContent = el.dataset.tip; tip.style.whiteSpace = "pre-line"; tip.style.display = "block";
+  });
+  document.addEventListener("mousemove", e => {
+    if (tip.style.display !== "block") return;
+    const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8), y = e.clientY + 16 + tip.offsetHeight > innerHeight ? e.clientY - tip.offsetHeight - 10 : e.clientY + 16;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  });
+
+  // Semaine affichée : celle du prochain cours si la semaine courante est vide (vacances…)
+  const next = COURS.find(c => c.date >= toISO(state.week));
+  if (next && next.date > toISO(addDays(state.week, 4))) state.week = monday(parseISO(next.date));
+
+  addEventListener("hashchange", () => setView(location.hash.slice(1), false));
+  setView(location.hash.slice(1) || "covoit", false);
+}
+init();
+</script>
+</body>
+</html>
